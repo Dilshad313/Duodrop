@@ -7,7 +7,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="space-y-4 md:col-span-1">
             <span className="text-2xl font-black tracking-tight">
-              COMBO<span className="text-indigo-400">.STORE</span>
+              Duo<span className="text-indigo-400">drop</span>
             </span>
             <p className="text-sm text-slate-400 leading-relaxed max-w-xs">
               Live Shopify pipeline syncing variants into flexible line-item checkouts. Premium quality products at unbeatable prices.
@@ -56,7 +56,7 @@ export default function Footer() {
 
         <div className="mt-12 pt-8 border-t border-slate-800 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-xs text-slate-500">
-            © 2026 COMBO.STORE. All rights reserved. Made with ❤️
+            © 2026 Duodrop. All rights reserved. Made with ❤️
           </p>
           <div className="flex items-center gap-6 text-xs text-slate-500">
             <span>🌐 English</span>

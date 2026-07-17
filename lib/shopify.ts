@@ -1,3 +1,4 @@
+// lib/shopify.ts
 const domain = process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN;
 const token = process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_TOKEN as string | undefined;
 
@@ -16,6 +17,9 @@ export async function shopifyFetch<T>({
     throw new Error("Missing Shopify environment variables");
   }
 
+  // Trim whitespace to avoid parser errors
+  const trimmedQuery = query.trim();
+
   const response = await fetch(`https://${domain}/api/2024-01/graphql.json`, {
     method: "POST",
     headers: {
@@ -24,7 +28,7 @@ export async function shopifyFetch<T>({
         ? { "Shopify-Storefront-Private-Token": token }
         : { "X-Shopify-Storefront-Access-Token": token }),
     },
-    body: JSON.stringify({ query, variables }),
+    body: JSON.stringify({ query: trimmedQuery, variables }),
     next: { revalidate: 60 },
   });
 

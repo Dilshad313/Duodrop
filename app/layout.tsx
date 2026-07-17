@@ -1,6 +1,7 @@
+// app/layout.tsx
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import type { ReactNode } from "react";
+import { CartProvider } from "@/context/CartContext";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -14,15 +15,21 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Combo.Store | Premium Shopify Bundles",
-  description: "Modern premium storefront built with Next.js and Shopify storefront API.",
+  title: "Duodrop | Premium Shopify Bundles",
+  description: "Modern premium storefront built with Next.js and Shopify Storefront API.",
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full scroll-smooth`}>
-      <body className="min-h-full bg-[var(--background)] text-[var(--foreground)] antialiased">
-        {children}
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full`}>
+      <body className="min-h-full antialiased">
+        <CartProvider>
+          {children}
+        </CartProvider>
       </body>
     </html>
   );
