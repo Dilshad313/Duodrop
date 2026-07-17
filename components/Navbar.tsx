@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
-import { Search, User, ShoppingBag, ChevronDown } from "lucide-react";
+import { Search, User, ShoppingBag, ChevronDown, Menu, X } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useRouter } from "next/navigation";
 
@@ -19,6 +19,7 @@ export default function Navbar() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [shopDropdownOpen, setShopDropdownOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -40,14 +41,14 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-[#143255] backdrop-blur-2xl">
-      <nav className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        {/* Brand – text only, color #febd8 */}
-        <Link href="/" className="text-2xl font-black tracking-tight text-[#febd8] transition hover:opacity-80">
+      <nav className="mx-auto flex h-20 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        {/* Brand – text color #2FEBD8 */}
+        <Link href="/" className="text-2xl font-black tracking-tight text-[#2FEBD8] transition hover:opacity-80">
           Duodrop
         </Link>
 
-        {/* Desktop Nav Links – color #febd8 */}
-        <div className="hidden items-center gap-6 text-sm font-semibold text-[#febd8] md:flex">
+        {/* Desktop Nav Links – color #2FEBD8 */}
+        <div className="hidden items-center gap-6 text-sm font-semibold text-[#2FEBD8] md:flex">
           <Link href="/" className="transition hover:text-white/90">
             Home
           </Link>
@@ -64,14 +65,14 @@ export default function Navbar() {
               <div className="absolute left-0 mt-2 w-48 rounded-xl border border-white/10 bg-[#143255] p-2 shadow-xl backdrop-blur-xl">
                 <Link
                   href="/beauty-tools"
-                  className="block rounded-lg px-4 py-2 text-sm font-medium text-[#febd8] transition hover:bg-white/10 hover:text-white/90"
+                  className="block rounded-lg px-4 py-2 text-sm font-medium text-[#2FEBD8] transition hover:bg-white/10 hover:text-white/90"
                   onClick={() => setShopDropdownOpen(false)}
                 >
                   Beauty Tools
                 </Link>
                 <Link
                   href="/beauty-combos"
-                  className="block rounded-lg px-4 py-2 text-sm font-medium text-[#febd8] transition hover:bg-white/10 hover:text-white/90"
+                  className="block rounded-lg px-4 py-2 text-sm font-medium text-[#2FEBD8] transition hover:bg-white/10 hover:text-white/90"
                   onClick={() => setShopDropdownOpen(false)}
                 >
                   Beauty Combos
@@ -107,7 +108,7 @@ export default function Navbar() {
           </form>
 
           <button
-            className="grid h-10 w-10 place-items-center rounded-full border border-white/20 bg-white/10 text-white/80 shadow-sm transition hover:-translate-y-0.5 hover:bg-white/20"
+            className="grid h-10 w-10 place-items-center rounded-full border border-white/20 bg-white/10 text-white/80 shadow-sm transition hover:-translate-y-0.5 hover:bg-white/20 sm:hidden"
             aria-label="Search"
             onClick={() => router.push("/search")}
           >
@@ -133,8 +134,40 @@ export default function Navbar() {
               </span>
             )}
           </Link>
+
+          {/* Mobile menu toggle */}
+          <button
+            className="grid h-10 w-10 place-items-center rounded-full border border-white/20 bg-white/10 text-white/80 shadow-sm transition hover:-translate-y-0.5 hover:bg-white/20 md:hidden"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Menu"
+          >
+            {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
         </div>
       </nav>
+
+      {/* Mobile Menu */}
+      {mobileMenuOpen && (
+        <div className="border-t border-white/10 bg-[#143255] px-4 py-4 md:hidden">
+          <div className="flex flex-col gap-3 text-sm font-semibold text-[#2FEBD8]">
+            <Link href="/" className="transition hover:text-white/90" onClick={() => setMobileMenuOpen(false)}>
+              Home
+            </Link>
+            <Link href="/beauty-tools" className="transition hover:text-white/90" onClick={() => setMobileMenuOpen(false)}>
+              Beauty Tools
+            </Link>
+            <Link href="/beauty-combos" className="transition hover:text-white/90" onClick={() => setMobileMenuOpen(false)}>
+              Beauty Combos
+            </Link>
+            <Link href="/contact" className="transition hover:text-white/90" onClick={() => setMobileMenuOpen(false)}>
+              Contact
+            </Link>
+            <Link href="/return-policy" className="transition hover:text-white/90" onClick={() => setMobileMenuOpen(false)}>
+              Return Policy
+            </Link>
+          </div>
+        </div>
+      )}
     </header>
   );
 }

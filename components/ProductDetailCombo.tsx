@@ -25,10 +25,8 @@ export default function ProductDetailCombo({ product }: { product: Product }) {
   const [isPending, startTransition] = useTransition();
   const [message, setMessage] = useState<string | null>(null);
 
-  // Auto-selected variants (first 5 from product variants)
   const autoVariants = product.variants.slice(0, 5);
 
-  // Custom selection state
   const [selectedVariantIds, setSelectedVariantIds] = useState<string[]>([]);
   const [customQuantities, setCustomQuantities] = useState<Record<string, number>>({});
 
@@ -114,12 +112,6 @@ export default function ProductDetailCombo({ product }: { product: Product }) {
 
   return (
     <div className="space-y-10">
-      {/* Product Title */}
-      <div>
-        <h1 className="text-3xl font-black text-slate-950 sm:text-4xl">{product.title}</h1>
-        <p className="mt-2 text-sm text-slate-600">{product.description}</p>
-      </div>
-
       {/* AUTO SELECT COMBO */}
       <section>
         <div className="flex flex-wrap items-center justify-between gap-2">
@@ -132,7 +124,6 @@ export default function ProductDetailCombo({ product }: { product: Product }) {
           No customization. Best products, best savings!
         </p>
 
-        {/* Horizontal scrollable carousel */}
         <div className="mt-4 overflow-x-auto pb-4 snap-x snap-mandatory scroll-smooth [-webkit-overflow-scrolling:touch]">
           <div className="flex gap-4 w-max">
             {autoVariants.map((variant) => (
@@ -161,7 +152,6 @@ export default function ProductDetailCombo({ product }: { product: Product }) {
           </div>
         </div>
 
-        {/* Auto combo badges */}
         <div className="mt-4 flex flex-wrap gap-4">
           <span className="rounded-full bg-emerald-100 px-4 py-1.5 text-xs font-bold text-emerald-700">
             10 Premium Items
@@ -183,7 +173,7 @@ export default function ProductDetailCombo({ product }: { product: Product }) {
         </p>
 
         <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-          {product.variants.map((variant, index) => {
+          {product.variants.map((variant) => {
             const isSelected = selectedVariantIds.includes(variant.id);
             return (
               <div
@@ -257,7 +247,7 @@ export default function ProductDetailCombo({ product }: { product: Product }) {
         </p>
       </section>
 
-      {/* Summary Section */}
+      {/* Summary */}
       {selectedVariants.length > 0 && (
         <section className="rounded-3xl border border-white/70 bg-white/80 p-6 shadow-lg backdrop-blur-xl">
           <div className="grid gap-4 sm:grid-cols-3">

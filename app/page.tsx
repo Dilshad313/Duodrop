@@ -1,7 +1,7 @@
-// app/page.tsx
 import Link from "next/link";
 import Image from "next/image";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import { GET_ALL_PRODUCTS } from "@/lib/queries";
 import { isShopifyConfigured, shopifyFetch } from "@/lib/shopify";
 import { ProductNode } from "@/types/products";
@@ -39,44 +39,43 @@ export default async function HomePage() {
       <Navbar />
 
       <main>
-        {/* Hero Section – Fixed for proper display */}
-        <section className="relative h-[75vh] min-h-[500px] w-full overflow-hidden">
+        {/* Hero Section – pure image, text color #143255 */}
+        <section className="relative h-[90vh] w-full overflow-hidden">
+          {/* Background Image – no overlay, exactly as uploaded */}
           <div className="absolute inset-0">
             <Image
               src="/header.png"
               alt="Hero background"
               fill
-              className="object-cover object-center brightness-110 contrast-105"
+              className="object-cover object-center"
               priority
             />
-            {/* Dark overlay for text readability */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0b1a33]/80 via-[#0b1a33]/30 to-transparent" />
-            <div className="absolute inset-0 bg-black/20" />
           </div>
 
-          <div className="relative mx-auto flex h-full max-w-7xl flex-col items-start justify-center px-4 sm:px-6 lg:px-8">
-            <div className="max-w-2xl space-y-5">
-              <h1 className="text-4xl font-black leading-[1.1] tracking-tight text-white drop-shadow-[0_4px_30px_rgba(0,0,0,0.6)] sm:text-5xl lg:text-6xl">
+          {/* Content – text in #143255 with light shadow for readability */}
+          <div className="relative mx-auto flex h-full max-w-7xl items-center px-4 sm:px-6 lg:px-8">
+            <div className="max-w-2xl space-y-5 pl-0 sm:pl-4 lg:pl-8">
+              <h1 className="text-4xl font-black leading-[1.1] tracking-tight text-[#143255] [text-shadow:0_2px_20px_rgba(255,255,255,0.7)] sm:text-5xl lg:text-6xl">
                 Discover Your <br />
-                <span className="bg-gradient-to-r from-indigo-300 to-purple-300 bg-clip-text text-transparent drop-shadow-[0_2px_20px_rgba(79,70,229,0.3)]">
+                <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent [text-shadow:0_2px_20px_rgba(255,255,255,0.5)]">
                   Beauty
                 </span>{" "}
                 Essentials
               </h1>
-              <p className="max-w-xl text-lg text-white/95 drop-shadow-[0_2px_20px_rgba(0,0,0,0.5)] sm:text-xl">
+              <p className="max-w-xl text-lg text-[#143255] [text-shadow:0_2px_20px_rgba(255,255,255,0.7)] sm:text-xl">
                 Premium beauty tools and combos curated for your everyday routine.
               </p>
               <div className="flex flex-wrap gap-4 pt-2">
                 <Link
                   href="#products"
-                  className="group inline-flex items-center gap-2 rounded-2xl bg-indigo-600 px-8 py-4 text-sm font-bold text-white shadow-[0_20px_40px_rgba(79,70,229,0.4)] transition hover:-translate-y-1 hover:bg-indigo-700 hover:shadow-[0_30px_60px_rgba(79,70,229,0.5)]"
+                  className="group inline-flex items-center gap-2 rounded-2xl bg-[#2FEBD8] px-8 py-4 text-sm font-bold text-[#143255] shadow-[0_20px_40px_rgba(47,235,216,0.3)] transition hover:-translate-y-1 hover:bg-[#2FEBD8]/80 hover:shadow-[0_30px_60px_rgba(47,235,216,0.4)]"
                 >
                   Shop Now
                   <span className="transition-transform group-hover:translate-x-1">→</span>
                 </Link>
                 <Link
                   href="/beauty-tools"
-                  className="group inline-flex items-center gap-2 rounded-2xl bg-white/20 px-8 py-4 text-sm font-bold text-white backdrop-blur-sm transition hover:-translate-y-1 hover:bg-white/30"
+                  className="group inline-flex items-center gap-2 rounded-2xl bg-[#143255]/80 px-8 py-4 text-sm font-bold text-white backdrop-blur-sm transition hover:-translate-y-1 hover:bg-[#143255]"
                 >
                   Explore Tools
                 </Link>
@@ -85,7 +84,7 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* Product Grid */}
+        {/* Product Grid – unchanged */}
         <section id="products" className="mx-auto max-w-7xl px-4 pt-16 sm:px-6 lg:px-8">
           <div className="mb-8 flex items-center justify-between">
             <div>
@@ -169,6 +168,8 @@ export default async function HomePage() {
           </div>
         </section>
       </main>
+
+      <Footer />
     </div>
   );
 }

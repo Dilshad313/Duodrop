@@ -10,7 +10,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
           {/* Brand */}
           <div className="space-y-4">
-            <Link href="/" className="text-2xl font-black tracking-tight text-[#febd8]">
+            <Link href="/" className="text-2xl font-black tracking-tight text-[#2FEBD8]">
               Duodrop
             </Link>
             <p className="text-sm text-white/60">
@@ -19,28 +19,28 @@ export default function Footer() {
             <div className="flex gap-3">
               <a
                 href="#"
-                className="rounded-full bg-white/10 p-2 transition hover:bg-white/20 hover:text-white"
+                className="rounded-full bg-white/10 p-2 text-[#2FEBD8] transition hover:bg-white/20 hover:text-white"
                 aria-label="Facebook"
               >
                 <FaFacebook size={18} />
               </a>
               <a
                 href="#"
-                className="rounded-full bg-white/10 p-2 transition hover:bg-white/20 hover:text-white"
+                className="rounded-full bg-white/10 p-2 text-[#2FEBD8] transition hover:bg-white/20 hover:text-white"
                 aria-label="Instagram"
               >
                 <FaInstagram size={18} />
               </a>
               <a
                 href="#"
-                className="rounded-full bg-white/10 p-2 transition hover:bg-white/20 hover:text-white"
+                className="rounded-full bg-white/10 p-2 text-[#2FEBD8] transition hover:bg-white/20 hover:text-white"
                 aria-label="Twitter"
               >
                 <FaTwitter size={18} />
               </a>
               <a
                 href="#"
-                className="rounded-full bg-white/10 p-2 transition hover:bg-white/20 hover:text-white"
+                className="rounded-full bg-white/10 p-2 text-[#2FEBD8] transition hover:bg-white/20 hover:text-white"
                 aria-label="YouTube"
               >
                 <FaYoutube size={18} />
@@ -50,25 +50,25 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-sm font-bold uppercase tracking-wider text-white">Quick Links</h3>
+            <h3 className="text-sm font-bold uppercase tracking-wider text-[#2FEBD8]">Quick Links</h3>
             <ul className="mt-4 space-y-2 text-sm">
               <li>
-                <Link href="/" className="text-white/60 transition hover:text-white">
+                <Link href="/" className="text-white/60 transition hover:text-[#2FEBD8]">
                   Home
                 </Link>
               </li>
               <li>
-                <Link href="/beauty-tools" className="text-white/60 transition hover:text-white">
+                <Link href="/beauty-tools" className="text-white/60 transition hover:text-[#2FEBD8]">
                   Beauty Tools
                 </Link>
               </li>
               <li>
-                <Link href="/beauty-combos" className="text-white/60 transition hover:text-white">
+                <Link href="/beauty-combos" className="text-white/60 transition hover:text-[#2FEBD8]">
                   Beauty Combos
                 </Link>
               </li>
               <li>
-                <Link href="/products" className="text-white/60 transition hover:text-white">
+                <Link href="/products" className="text-white/60 transition hover:text-[#2FEBD8]">
                   All Products
                 </Link>
               </li>
@@ -77,25 +77,25 @@ export default function Footer() {
 
           {/* Support */}
           <div>
-            <h3 className="text-sm font-bold uppercase tracking-wider text-white">Support</h3>
+            <h3 className="text-sm font-bold uppercase tracking-wider text-[#2FEBD8]">Support</h3>
             <ul className="mt-4 space-y-2 text-sm">
               <li>
-                <Link href="/contact" className="text-white/60 transition hover:text-white">
+                <Link href="/contact" className="text-white/60 transition hover:text-[#2FEBD8]">
                   Contact Us
                 </Link>
               </li>
               <li>
-                <Link href="/return-policy" className="text-white/60 transition hover:text-white">
+                <Link href="/return-policy" className="text-white/60 transition hover:text-[#2FEBD8]">
                   Return Policy
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-white/60 transition hover:text-white">
+                <Link href="#" className="text-white/60 transition hover:text-[#2FEBD8]">
                   FAQ
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-white/60 transition hover:text-white">
+                <Link href="#" className="text-white/60 transition hover:text-[#2FEBD8]">
                   Shipping Info
                 </Link>
               </li>
@@ -104,18 +104,18 @@ export default function Footer() {
 
           {/* Contact */}
           <div>
-            <h3 className="text-sm font-bold uppercase tracking-wider text-white">Get in Touch</h3>
+            <h3 className="text-sm font-bold uppercase tracking-wider text-[#2FEBD8]">Get in Touch</h3>
             <ul className="mt-4 space-y-3 text-sm">
               <li className="flex items-start gap-3 text-white/60">
-                <MapPin size={18} className="mt-0.5 flex-shrink-0" />
+                <MapPin size={18} className="mt-0.5 flex-shrink-0 text-[#2FEBD8]" />
                 <span>123 Beauty Lane, Mumbai, India</span>
               </li>
               <li className="flex items-center gap-3 text-white/60">
-                <Mail size={18} className="flex-shrink-0" />
+                <Mail size={18} className="flex-shrink-0 text-[#2FEBD8]" />
                 <span>support@duodrop.com</span>
               </li>
               <li className="flex items-center gap-3 text-white/60">
-                <Phone size={18} className="flex-shrink-0" />
+                <Phone size={18} className="flex-shrink-0 text-[#2FEBD8]" />
                 <span>+91 98765 43210</span>
               </li>
             </ul>
