@@ -1,13 +1,11 @@
-// lib/queries.ts
-
-// Get all products
 export const GET_ALL_PRODUCTS = `
   query GetAllProducts($first: Int!) {
-    products(first: $first) {
+    products(first: $first, sortKey: BEST_SELLING) {
       edges {
         node {
           id
           title
+          handle
           description
           priceRange {
             minVariantPrice {
@@ -19,7 +17,7 @@ export const GET_ALL_PRODUCTS = `
               currencyCode
             }
           }
-          images(first: 1) {
+          images(first: 4) {
             edges {
               node {
                 url
@@ -32,6 +30,8 @@ export const GET_ALL_PRODUCTS = `
               node {
                 id
                 title
+                availableForSale
+                quantityAvailable
                 price {
                   amount
                 }
@@ -44,20 +44,24 @@ export const GET_ALL_PRODUCTS = `
   }
 `;
 
-// Get single product by ID
 export const GET_PRODUCT_BY_ID = `
   query GetProduct($id: ID!) {
     product(id: $id) {
       id
       title
+      handle
       description
       priceRange {
         minVariantPrice {
           amount
           currencyCode
         }
+        maxVariantPrice {
+          amount
+          currencyCode
+        }
       }
-      images(first: 10) {
+      images(first: 8) {
         edges {
           node {
             url
@@ -65,47 +69,15 @@ export const GET_PRODUCT_BY_ID = `
           }
         }
       }
-      variants(first: 10) {
+      variants(first: 20) {
         edges {
           node {
             id
             title
+            availableForSale
+            quantityAvailable
             price {
               amount
-            }
-          }
-        }
-      }
-    }
-  }
-`;
-
-// Get products by handle (for collections)
-export const GET_COLLECTION_PRODUCTS = `
-  query GetCollection($handle: String!) {
-    collectionByHandle(handle: $handle) {
-      id
-      title
-      description
-      products(first: 10) {
-        edges {
-          node {
-            id
-            title
-            description
-            priceRange {
-              minVariantPrice {
-                amount
-                currencyCode
-              }
-            }
-            images(first: 1) {
-              edges {
-                node {
-                  url
-                  altText
-                }
-              }
             }
           }
         }

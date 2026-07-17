@@ -1,12 +1,11 @@
-// lib/cart.ts
-
 export const CREATE_CART = `
   mutation CreateCart($lines: [CartLineInput!]!) {
     cartCreate(input: { lines: $lines }) {
       cart {
         id
         checkoutUrl
-        lines(first: 10) {
+        totalQuantity
+        lines(first: 20) {
           edges {
             node {
               id
@@ -15,8 +14,12 @@ export const CREATE_CART = `
                 ... on ProductVariant {
                   id
                   title
+                  product {
+                    title
+                  }
                   price {
                     amount
+                    currencyCode
                   }
                 }
               }
@@ -27,30 +30,6 @@ export const CREATE_CART = `
           totalAmount {
             amount
             currencyCode
-          }
-        }
-      }
-    }
-  }
-`;
-
-export const ADD_TO_CART = `
-  mutation AddToCart($cartId: ID!, $lines: [CartLineInput!]!) {
-    cartLinesAdd(cartId: $cartId, lines: $lines) {
-      cart {
-        id
-        checkoutUrl
-        lines(first: 10) {
-          edges {
-            node {
-              id
-              quantity
-            }
-          }
-        }
-        cost {
-          totalAmount {
-            amount
           }
         }
       }

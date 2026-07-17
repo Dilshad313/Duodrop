@@ -1,7 +1,9 @@
-// app/products/[id]/page.tsx (Server Component)
-import { shopifyFetch } from '@/lib/shopify';
-import { GET_PRODUCT_BY_ID } from '@/lib/queries';
-import { notFound } from 'next/navigation';
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import Navbar from "@/components/Navbar";
+import ProductDetailClient from "@/components/ProductDetailClient";
+import { GET_PRODUCT_BY_ID } from "@/lib/queries";
+import { isShopifyConfigured, shopifyFetch } from "@/lib/shopify";
 
 type ProductResponse = {
   product: {
@@ -10,6 +12,7 @@ type ProductResponse = {
     description: string;
     priceRange: {
       minVariantPrice: { amount: string; currencyCode: string };
+      maxVariantPrice: { amount: string; currencyCode: string };
     };
     images: {
       edges: Array<{
@@ -18,10 +21,16 @@ type ProductResponse = {
     };
     variants: {
       edges: Array<{
-        node: { id: string; title: string; price: { amount: string } };
+        node: {
+          id: string;
+          title: string;
+          availableForSale?: boolean;
+          quantityAvailable?: number | null;
+          price: { amount: string };
+        };
       }>;
     };
-  };
+  } | null;
 };
 
 export default async function ProductDetailPage({
@@ -29,6 +38,22 @@ export default async function ProductDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  if (!isShopifyConfigured()) {
+    return (
+      <div className="min-h-screen">
+        <Navbar />
+        <main className="mx-auto max-w-5xl px-4 py-14 sm:px-6 lg:px-8">
+          <div className="rounded-[2rem] border border-amber-200 bg-amber-50 p-8 text-amber-900 shadow-sm">
+            <h1 className="text-2xl font-black">Shopify configuration missing</h1>
+            <p className="mt-3 text-sm leading-7">
+              Please add the Shopify storefront environment variables to load the product detail experience.
+            </p>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   try {
     const resolvedParams = await params;
     const decodedId = decodeURIComponent(resolvedParams.id);
@@ -40,55 +65,42 @@ export default async function ProductDetailPage({
     const product = data.product;
     if (!product) notFound();
 
+    const normalizedProduct = {
+      id: product.id,
+      title: product.title,
+      description: product.description,
+      priceRange: product.priceRange,
+      images: product.images.edges.map((edge) => edge.node),
+      variants: product.variants.edges.map((edge) => edge.node),
+    };
+
     return (
-      <div className="max-w-7xl mx-auto p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Images */}
-          <div>
-            {product.images.edges.length > 0 && (
-              <img
-                src={product.images.edges[0].node.url}
-                alt={product.images.edges[0].node.altText || product.title}
-                className="w-full rounded-lg"
-              />
-            )}
+      <div className="min-h-screen">
+        <Navbar />
+        <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
+          <div className="mb-6 flex flex-wrap items-center gap-2 text-sm font-medium text-slate-500">
+            <Link href="/" className="transition hover:text-slate-950">Home</Link>
+            <span>/</span>
+            <Link href="/products" className="transition hover:text-slate-950">Products</Link>
+            <span>/</span>
+            <span className="text-slate-900">{product.title}</span>
           </div>
 
-          {/* Details */}
-          <div>
-            <h1 className="text-3xl font-bold">{product.title}</h1>
-            <p className="text-gray-600 mt-4">{product.description}</p>
-            <p className="text-2xl font-bold mt-4">
-              ₹{parseFloat(product.priceRange.minVariantPrice.amount).toLocaleString()}
-            </p>
-            
-            {/* Variants */}
-            <div className="mt-6">
-              <h3 className="font-semibold">Variants:</h3>
-              {product.variants.edges.map((variant) => (
-                <div key={variant.node.id} className="flex items-center gap-4 mt-2">
-                  <span>{variant.node.title}</span>
-                  <span>₹{parseFloat(variant.node.price.amount).toLocaleString()}</span>
-                </div>
-              ))}
-            </div>
-
-            {/* Add to Cart Button */}
-            <button
-              className="mt-6 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
-            >
-              Add to Cart
-            </button>
-          </div>
-        </div>
+          <ProductDetailClient product={normalizedProduct} />
+        </main>
       </div>
     );
   } catch (error) {
-    console.error('Error loading product:', error);
+    console.error("Error loading product:", error);
     return (
-      <div className="p-6 text-center">
-        <h1 className="text-2xl font-bold text-red-600">Error Loading Product</h1>
-        <p className="text-gray-600 mt-2">Please try again later</p>
+      <div className="min-h-screen">
+        <Navbar />
+        <main className="mx-auto max-w-5xl px-4 py-14 sm:px-6 lg:px-8">
+          <div className="rounded-[2rem] border border-rose-200 bg-rose-50 p-8 text-center shadow-sm">
+            <h1 className="text-3xl font-black text-rose-700">Error Loading Product</h1>
+            <p className="mt-3 text-sm leading-7 text-rose-900/80">Please try again later.</p>
+          </div>
+        </main>
       </div>
     );
   }
