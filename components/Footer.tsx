@@ -1,70 +1,129 @@
 // components/Footer.tsx
+import Link from "next/link";
+import { FaFacebook, FaInstagram, FaTwitter, FaYoutube } from "react-icons/fa";
+import { Mail, Phone, MapPin } from "lucide-react";
+
 export default function Footer() {
   return (
-    <footer className="bg-slate-900 text-white mt-auto">
-      <div className="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+    <footer className="bg-[#143255] text-white/80">
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
           {/* Brand */}
-          <div className="space-y-4 md:col-span-1">
-            <span className="text-2xl font-black tracking-tight">
-              Duo<span className="text-indigo-400">drop</span>
-            </span>
-            <p className="text-sm text-slate-400 leading-relaxed max-w-xs">
-              Live Shopify pipeline syncing variants into flexible line-item checkouts. Premium quality products at unbeatable prices.
+          <div className="space-y-4">
+            <Link href="/" className="text-2xl font-black tracking-tight text-[#febd8]">
+              Duodrop
+            </Link>
+            <p className="text-sm text-white/60">
+              Premium beauty products curated for your everyday routine. Quality you can trust.
             </p>
-            <div className="flex gap-4 pt-2">
-              <a href="#" className="text-slate-400 hover:text-white transition-colors text-xl">📱</a>
-              <a href="#" className="text-slate-400 hover:text-white transition-colors text-xl">🐦</a>
-              <a href="#" className="text-slate-400 hover:text-white transition-colors text-xl">📸</a>
-              <a href="#" className="text-slate-400 hover:text-white transition-colors text-xl">▶️</a>
+            <div className="flex gap-3">
+              <a
+                href="#"
+                className="rounded-full bg-white/10 p-2 transition hover:bg-white/20 hover:text-white"
+                aria-label="Facebook"
+              >
+                <FaFacebook size={18} />
+              </a>
+              <a
+                href="#"
+                className="rounded-full bg-white/10 p-2 transition hover:bg-white/20 hover:text-white"
+                aria-label="Instagram"
+              >
+                <FaInstagram size={18} />
+              </a>
+              <a
+                href="#"
+                className="rounded-full bg-white/10 p-2 transition hover:bg-white/20 hover:text-white"
+                aria-label="Twitter"
+              >
+                <FaTwitter size={18} />
+              </a>
+              <a
+                href="#"
+                className="rounded-full bg-white/10 p-2 transition hover:bg-white/20 hover:text-white"
+                aria-label="YouTube"
+              >
+                <FaYoutube size={18} />
+              </a>
             </div>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-widest text-slate-300 mb-4">Quick Links</h4>
-            <ul className="space-y-3 text-sm">
-              <li><a href="#" className="text-slate-400 hover:text-white transition-colors">About Us</a></li>
-              <li><a href="#" className="text-slate-400 hover:text-white transition-colors">Contact</a></li>
-              <li><a href="#" className="text-slate-400 hover:text-white transition-colors">Blog</a></li>
-              <li><a href="#" className="text-slate-400 hover:text-white transition-colors">Careers</a></li>
+            <h3 className="text-sm font-bold uppercase tracking-wider text-white">Quick Links</h3>
+            <ul className="mt-4 space-y-2 text-sm">
+              <li>
+                <Link href="/" className="text-white/60 transition hover:text-white">
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link href="/beauty-tools" className="text-white/60 transition hover:text-white">
+                  Beauty Tools
+                </Link>
+              </li>
+              <li>
+                <Link href="/beauty-combos" className="text-white/60 transition hover:text-white">
+                  Beauty Combos
+                </Link>
+              </li>
+              <li>
+                <Link href="/products" className="text-white/60 transition hover:text-white">
+                  All Products
+                </Link>
+              </li>
             </ul>
           </div>
 
           {/* Support */}
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-widest text-slate-300 mb-4">Support</h4>
-            <ul className="space-y-3 text-sm">
-              <li><a href="#" className="text-slate-400 hover:text-white transition-colors">Help Center</a></li>
-              <li><a href="#" className="text-slate-400 hover:text-white transition-colors">Returns Policy</a></li>
-              <li><a href="#" className="text-slate-400 hover:text-white transition-colors">Shipping Info</a></li>
-              <li><a href="#" className="text-slate-400 hover:text-white transition-colors">Privacy Policy</a></li>
+            <h3 className="text-sm font-bold uppercase tracking-wider text-white">Support</h3>
+            <ul className="mt-4 space-y-2 text-sm">
+              <li>
+                <Link href="/contact" className="text-white/60 transition hover:text-white">
+                  Contact Us
+                </Link>
+              </li>
+              <li>
+                <Link href="/return-policy" className="text-white/60 transition hover:text-white">
+                  Return Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="#" className="text-white/60 transition hover:text-white">
+                  FAQ
+                </Link>
+              </li>
+              <li>
+                <Link href="#" className="text-white/60 transition hover:text-white">
+                  Shipping Info
+                </Link>
+              </li>
             </ul>
           </div>
 
-          {/* Integrations */}
+          {/* Contact */}
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-widest text-slate-300 mb-4">Integrations</h4>
-            <ul className="space-y-3 text-sm">
-              <li className="text-slate-400">Shopify GraphQL Storefront</li>
-              <li className="text-slate-400">Next.js App Router 16</li>
-              <li className="text-slate-400">Tailwind CSS</li>
-              <li className="text-slate-400">TypeScript</li>
+            <h3 className="text-sm font-bold uppercase tracking-wider text-white">Get in Touch</h3>
+            <ul className="mt-4 space-y-3 text-sm">
+              <li className="flex items-start gap-3 text-white/60">
+                <MapPin size={18} className="mt-0.5 flex-shrink-0" />
+                <span>123 Beauty Lane, Mumbai, India</span>
+              </li>
+              <li className="flex items-center gap-3 text-white/60">
+                <Mail size={18} className="flex-shrink-0" />
+                <span>support@duodrop.com</span>
+              </li>
+              <li className="flex items-center gap-3 text-white/60">
+                <Phone size={18} className="flex-shrink-0" />
+                <span>+91 98765 43210</span>
+              </li>
             </ul>
           </div>
         </div>
 
-        <div className="mt-12 pt-8 border-t border-slate-800 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="text-xs text-slate-500">
-            © 2026 Duodrop. All rights reserved. Made with ❤️
-          </p>
-          <div className="flex items-center gap-6 text-xs text-slate-500">
-            <span>🌐 English</span>
-            <span>💰 INR</span>
-            <span className="flex items-center gap-1">
-              <span>🔒</span> Secure Checkout
-            </span>
-          </div>
+        <div className="mt-8 border-t border-white/10 pt-6 text-center text-sm text-white/40">
+          &copy; {new Date().getFullYear()} Duodrop. All rights reserved.
         </div>
       </div>
     </footer>

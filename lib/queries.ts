@@ -126,3 +126,48 @@ export const SEARCH_PRODUCTS = `query SearchProducts($query: String!, $first: In
     }
   }
 }`;
+
+// New: fetch products by tag (e.g., "beauty-tools")
+export const GET_PRODUCTS_BY_TAG = `query GetProductsByTag($tag: String!, $first: Int!) {
+  products(first: $first, query: $tag, sortKey: BEST_SELLING) {
+    edges {
+      node {
+        id
+        title
+        handle
+        description
+        priceRange {
+          minVariantPrice {
+            amount
+            currencyCode
+          }
+          maxVariantPrice {
+            amount
+            currencyCode
+          }
+        }
+        images(first: 4) {
+          edges {
+            node {
+              url
+              altText
+            }
+          }
+        }
+        variants(first: 10) {
+          edges {
+            node {
+              id
+              title
+              availableForSale
+              quantityAvailable
+              price {
+                amount
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}`;
