@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
-import { Search, User, ShoppingBag, ChevronDown, Menu, X } from "lucide-react";
+import { Search, User, ShoppingBag, Menu, X } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useRouter } from "next/navigation";
 
@@ -10,14 +10,14 @@ export default function Navbar() {
   const { cartCount } = useCart();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
-  const [shopDropdownOpen, setShopDropdownOpen] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const mobileSearchRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setShopDropdownOpen(false);
+      if (mobileSearchRef.current && !mobileSearchRef.current.contains(event.target as Node)) {
+        setMobileSearchOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -28,6 +28,7 @@ export default function Navbar() {
     e.preventDefault();
     if (searchQuery.trim()) {
       router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setMobileSearchOpen(false);
     }
   };
 
@@ -45,40 +46,9 @@ export default function Navbar() {
             Home
           </Link>
 
-          {/* Shop Dropdown */}
-          <div className="relative" ref={dropdownRef}>
-            <button
-              onClick={() => setShopDropdownOpen(!shopDropdownOpen)}
-              className="flex items-center gap-1 transition hover:text-white/90"
-            >
-              Shop <ChevronDown size={16} className={`transition-transform ${shopDropdownOpen ? "rotate-180" : ""}`} />
-            </button>
-            {shopDropdownOpen && (
-              <div className="absolute left-0 mt-2 w-48 rounded-xl border border-white/10 bg-[#143255] p-2 shadow-xl backdrop-blur-xl">
-                <Link
-                  href="/collections/beauty-tools"
-                  className="block rounded-lg px-4 py-2 text-sm font-medium text-[#2FEBD8] transition hover:bg-white/10 hover:text-white/90"
-                  onClick={() => setShopDropdownOpen(false)}
-                >
-                  Beauty Tools
-                </Link>
-                <Link
-                  href="/collections/beauty-combos"
-                  className="block rounded-lg px-4 py-2 text-sm font-medium text-[#2FEBD8] transition hover:bg-white/10 hover:text-white/90"
-                  onClick={() => setShopDropdownOpen(false)}
-                >
-                  Beauty Combos
-                </Link>
-                <Link
-                  href="/products"
-                  className="block rounded-lg px-4 py-2 text-sm font-medium text-[#2FEBD8] transition hover:bg-white/10 hover:text-white/90"
-                  onClick={() => setShopDropdownOpen(false)}
-                >
-                  All Products
-                </Link>
-              </div>
-            )}
-          </div>
+          <Link href="/collections" className="transition hover:text-white/90">
+            Shop
+          </Link>
 
           <Link href="/contact" className="transition hover:text-white/90">
             Contact
@@ -90,13 +60,14 @@ export default function Navbar() {
 
         {/* Right side: Search + Icons */}
         <div className="flex items-center gap-2 text-white/80">
+          {/* Desktop Search */}
           <form onSubmit={handleSearch} className="relative hidden sm:block">
             <input
               type="text"
-              placeholder="Search..."
+              placeholder="Search products..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-10 w-40 rounded-full border border-white/20 bg-white/10 px-4 pr-10 text-sm text-white placeholder-white/50 outline-none transition focus:border-[#2FEBD8] focus:shadow-md lg:w-56"
+              className="h-10 w-44 rounded-full border border-white/20 bg-white/10 px-4 pr-10 text-sm text-white placeholder-white/50 outline-none transition focus:border-[#2FEBD8] focus:shadow-md lg:w-64"
             />
             <button
               type="submit"
@@ -106,13 +77,34 @@ export default function Navbar() {
             </button>
           </form>
 
-          <button
-            className="grid h-10 w-10 place-items-center rounded-full border border-white/20 bg-white/10 text-white/80 shadow-sm transition hover:-translate-y-0.5 hover:bg-white/20 sm:hidden"
-            aria-label="Search"
-            onClick={() => router.push("/search")}
-          >
-            <Search size={18} />
-          </button>
+          {/* Mobile Search Toggle + Input */}
+          <div className="relative sm:hidden" ref={mobileSearchRef}>
+            <button
+              className="grid h-10 w-10 place-items-center rounded-full border border-white/20 bg-white/10 text-white/80 shadow-sm transition hover:-translate-y-0.5 hover:bg-white/20"
+              aria-label="Search"
+              onClick={() => setMobileSearchOpen(!mobileSearchOpen)}
+            >
+              <Search size={18} />
+            </button>
+            {mobileSearchOpen && (
+              <form 
+                onSubmit={handleSearch}
+                className="absolute right-0 top-12 w-72 rounded-xl border border-white/10 bg-[#143255] p-3 shadow-xl z-50"
+              >
+                <input
+                  type="text"
+                  placeholder="Search products..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  autoFocus
+                  className="h-10 w-full rounded-lg border border-white/20 bg-white/10 px-3 text-sm text-white placeholder-white/50 outline-none focus:border-[#2FEBD8]"
+                />
+                <button type="submit" className="mt-2 w-full rounded-lg bg-[#2FEBD8] py-2 text-sm font-bold text-[#143255]">
+                  Search
+                </button>
+              </form>
+            )}
+          </div>
 
           <button
             className="grid h-10 w-10 place-items-center rounded-full border border-white/20 bg-white/10 text-white/80 shadow-sm transition hover:-translate-y-0.5 hover:bg-white/20"
@@ -152,14 +144,8 @@ export default function Navbar() {
             <Link href="/" className="transition hover:text-white/90" onClick={() => setMobileMenuOpen(false)}>
               Home
             </Link>
-            <Link href="/collections/beauty-tools" className="transition hover:text-white/90" onClick={() => setMobileMenuOpen(false)}>
-              Beauty Tools
-            </Link>
-            <Link href="/collections/beauty-combos" className="transition hover:text-white/90" onClick={() => setMobileMenuOpen(false)}>
-              Beauty Combos
-            </Link>
-            <Link href="/products" className="transition hover:text-white/90" onClick={() => setMobileMenuOpen(false)}>
-              All Products
+            <Link href="/collections" className="transition hover:text-white/90" onClick={() => setMobileMenuOpen(false)}>
+              Shop
             </Link>
             <Link href="/contact" className="transition hover:text-white/90" onClick={() => setMobileMenuOpen(false)}>
               Contact
