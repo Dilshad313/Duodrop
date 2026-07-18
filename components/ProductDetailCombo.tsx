@@ -19,6 +19,14 @@ type Product = {
   variants: Variant[];
 };
 
+// Helper function to format currency in INR
+function formatINR(amount: number): string {
+  return amount.toLocaleString('en-IN', {
+    maximumFractionDigits: 0,
+    minimumFractionDigits: 0,
+  });
+}
+
 export default function ProductDetailCombo({ product }: { product: Product }) {
   const { addToCart } = useCart();
   const [isPending, startTransition] = useTransition();
@@ -201,7 +209,7 @@ export default function ProductDetailCombo({ product }: { product: Product }) {
                 <h3 className="mt-2 text-sm font-bold text-slate-950">{variant.title}</h3>
                 <p className="text-xs text-slate-500">Size: {variant.title}</p>
                 <p className="mt-1 text-lg font-black text-slate-950">
-                  ₹{Number(variant.price.amount).toLocaleString("en-IN")}
+                  ₹{formatINR(Number(variant.price.amount))}
                 </p>
               </div>
             ))}
@@ -280,7 +288,7 @@ export default function ProductDetailCombo({ product }: { product: Product }) {
                 <p className="text-xs text-slate-500">Size: {variant.title}</p>
                 <div className="mt-1 flex items-center justify-between">
                   <span className="text-lg font-black text-slate-950">
-                    ₹{Number(variant.price.amount).toLocaleString("en-IN")}
+                    ₹{formatINR(Number(variant.price.amount))}
                   </span>
                   <input
                     type="checkbox"
@@ -362,19 +370,19 @@ export default function ProductDetailCombo({ product }: { product: Product }) {
             <div>
               <p className="text-sm text-slate-500">Total MRP</p>
               <p className="text-2xl font-black text-slate-950">
-                ₹{totalMrp.toLocaleString("en-IN")}
+                ₹{formatINR(totalMrp)}
               </p>
             </div>
             <div>
               <p className="text-sm text-slate-500">You Save</p>
               <p className="text-2xl font-black text-emerald-600">
-                ₹{youSave.toFixed(0).toLocaleString("en-IN")} ({discountPercent}% OFF)
+                ₹{formatINR(youSave)} ({discountPercent}% OFF)
               </p>
             </div>
             <div>
               <p className="text-sm text-slate-500">Combo Price</p>
               <p className="text-2xl font-black text-indigo-600">
-                ₹{comboPrice.toFixed(0).toLocaleString("en-IN")}
+                ₹{formatINR(comboPrice)}
               </p>
             </div>
           </div>
