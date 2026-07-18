@@ -52,7 +52,7 @@ export default async function ProductDetailPage({
         id: edge.node.id,
         title: edge.node.title,
         price: { amount: edge.node.price.amount },
-        availableForSale: edge.node.availableForSale,
+        availableForSale: edge.node.availableForSale ?? true, // Fallback to true if undefined
       })),
     };
 

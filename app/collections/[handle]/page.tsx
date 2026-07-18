@@ -54,6 +54,14 @@ type CollectionResponse = {
   } | null;
 };
 
+// Helper function to format currency in INR
+function formatINR(amount: number): string {
+  return amount.toLocaleString('en-IN', {
+    maximumFractionDigits: 0,
+    minimumFractionDigits: 0,
+  });
+}
+
 export default function CollectionPage({
   params,
 }: {
@@ -370,7 +378,7 @@ export default function CollectionPage({
             </div>
             <div className="rounded-lg bg-indigo-600 px-4 py-2 text-white text-center">
               <p className="text-[10px] font-bold uppercase tracking-wider text-indigo-200">Best Value</p>
-              <p className="text-sm font-black">SAVE ₹{autoYouSave.toFixed(0).toLocaleString("en-IN")}</p>
+              <p className="text-sm font-black">SAVE ₹{formatINR(autoYouSave)}</p>
             </div>
           </div>
 
@@ -404,7 +412,7 @@ export default function CollectionPage({
                         </div>
                         <h3 className="text-sm font-bold text-slate-900">{variant.productTitle}</h3>
                         <p className="text-xs text-slate-500">{variant.title}</p>
-                        <p className="text-base font-black text-slate-900 mt-1">₹{Number(variant.price.amount).toLocaleString("en-IN")}</p>
+                        <p className="text-base font-black text-slate-900 mt-1">₹{formatINR(Number(variant.price.amount))}</p>
                       </div>
                     ))}
                   </div>
@@ -513,7 +521,7 @@ export default function CollectionPage({
                   </div>
                   <h3 className="text-xs font-bold text-slate-900 line-clamp-1">{variant.productTitle}</h3>
                   <p className="text-[10px] text-slate-500">{variant.title}</p>
-                  <p className="text-sm font-black text-slate-900 mt-0.5">₹{Number(variant.price.amount).toLocaleString("en-IN")}</p>
+                  <p className="text-sm font-black text-slate-900 mt-0.5">₹{formatINR(Number(variant.price.amount))}</p>
 
                   {/* Quantity */}
                   <div className="flex items-center justify-center gap-1 mt-2">
@@ -543,15 +551,15 @@ export default function CollectionPage({
           <div className="grid grid-cols-3 gap-4 mb-4">
             <div>
               <p className="text-xs text-slate-500">Total MRP</p>
-              <p className="text-lg font-black text-slate-900">₹{grandTotalMrp.toLocaleString("en-IN")}</p>
+              <p className="text-lg font-black text-slate-900">₹{formatINR(grandTotalMrp)}</p>
             </div>
             <div>
               <p className="text-xs text-emerald-600">You Save</p>
-              <p className="text-lg font-black text-emerald-600">₹{grandYouSave.toFixed(0).toLocaleString("en-IN")} <span className="text-xs">(32% OFF)</span></p>
+              <p className="text-lg font-black text-emerald-600">₹{formatINR(grandYouSave)} <span className="text-xs">(32% OFF)</span></p>
             </div>
             <div>
               <p className="text-xs text-indigo-600">Combo Price</p>
-              <p className="text-lg font-black text-indigo-600">₹{grandComboPrice.toFixed(0).toLocaleString("en-IN")}</p>
+              <p className="text-lg font-black text-indigo-600">₹{formatINR(grandComboPrice)}</p>
             </div>
           </div>
 

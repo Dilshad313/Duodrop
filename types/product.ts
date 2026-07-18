@@ -1,6 +1,8 @@
+// types/product.ts
 export type ProductNode = {
   id: string;
   title: string;
+  handle: string;
   description: string;
   priceRange: {
     minVariantPrice: { amount: string; currencyCode: string };
@@ -13,7 +15,13 @@ export type ProductNode = {
   };
   variants: {
     edges: Array<{
-      node: { id: string; title: string; price: { amount: string } };
+      node: { 
+        id: string; 
+        title: string; 
+        price: { amount: string };
+        availableForSale?: boolean;
+        quantityAvailable?: number;
+      };
     }>;
   };
 };
