@@ -82,6 +82,7 @@ export default function CollectionPage({
 
   // Carousel state
   const [autoSlideIndex, setAutoSlideIndex] = useState(0);
+  const [itemsPerSlide, setItemsPerSlide] = useState(4);
 
   // Resolve params
   useEffect(() => {
@@ -146,13 +147,13 @@ export default function CollectionPage({
 
   const autoVariants = useMemo(() => allVariants.slice(0, 10), [allVariants]);
 
-  const [itemsPerSlide, setItemsPerSlide] = useState(4);
+  // Responsive items per slide - IMPROVED for mobile
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 640) setItemsPerSlide(2);
-      else if (window.innerWidth < 768) setItemsPerSlide(2);
-      else if (window.innerWidth < 1024) setItemsPerSlide(3);
-      else setItemsPerSlide(4);
+      if (window.innerWidth < 480) setItemsPerSlide(1); // Extra small phones
+      else if (window.innerWidth < 768) setItemsPerSlide(2); // Tablets
+      else if (window.innerWidth < 1024) setItemsPerSlide(3); // Small desktops
+      else setItemsPerSlide(4); // Large desktops
     };
     handleResize();
     window.addEventListener('resize', handleResize);
@@ -363,20 +364,20 @@ export default function CollectionPage({
         </Link>
 
         {/* ============================================ */}
-        {/* AUTO SELECT COMBO - EXACT LIKE IMAGE       */}
+        {/* AUTO SELECT COMBO - IMPROVED MOBILE CAROUSEL */}
         {/* ============================================ */}
         <section className="mb-10">
           {/* Header */}
-          <div className="flex items-start justify-between mb-1">
-            <div>
+          <div className="flex flex-col sm:flex-row items-start justify-between gap-4 mb-4">
+            <div className="flex-1">
               <div className="inline-flex items-center gap-1.5 rounded-md bg-indigo-100 px-2.5 py-1 text-[10px] font-bold text-indigo-700 uppercase tracking-wider mb-2">
                 <Zap size={10} />
                 Auto Select Combo
               </div>
-              <h2 className="text-xl sm:text-2xl font-black text-slate-900">Buy 10 Products Combo <span className="text-amber-500">✨</span></h2>
+              <h2 className="text-lg sm:text-2xl font-black text-slate-900">Buy 10 Products Combo <span className="text-amber-500">✨</span></h2>
               <p className="text-xs text-slate-500 mt-1">Best products handpicked for you automatically</p>
             </div>
-            <div className="rounded-lg bg-indigo-600 px-4 py-2 text-white text-center">
+            <div className="rounded-lg bg-indigo-600 px-4 py-2 text-white text-center whitespace-nowrap">
               <p className="text-[10px] font-bold uppercase tracking-wider text-indigo-200">Best Value</p>
               <p className="text-sm font-black">SAVE ₹{formatINR(autoYouSave)}</p>
             </div>
@@ -391,50 +392,79 @@ export default function CollectionPage({
             <p className="text-xs text-slate-500 mt-0.5">No customization. Best products, best savings!</p>
           </div>
 
-          {/* CAROUSEL - EXACT LIKE IMAGE */}
-          <div className="relative">
-            <button onClick={prevSlide} className="absolute left-0 top-1/2 -translate-y-1/2 z-10 h-8 w-8 rounded-full bg-white shadow-md border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-50">
+          {/* CAROUSEL - IMPROVED FOR MOBILE */}
+          <div className="relative group">
+            {/* Previous Button - Hidden on very small screens */}
+            <button 
+              onClick={prevSlide} 
+              className="absolute -left-3 sm:left-2 top-1/2 -translate-y-1/2 z-10 h-8 w-8 rounded-full bg-white shadow-md border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-50 transition opacity-0 group-hover:opacity-100 sm:opacity-100"
+            >
               <ChevronLeft size={18} />
             </button>
 
-            <div className="overflow-hidden mx-8">
-              <div className="flex transition-transform duration-500 ease-out" style={{ transform: `translateX(-${autoSlideIndex * 100}%)` }}>
+            {/* Carousel Container */}
+            <div className="overflow-hidden mx-2 sm:mx-8">
+              <div 
+                className="flex transition-transform duration-500 ease-out"
+                style={{ 
+                  transform: `translateX(-${autoSlideIndex * 100}%)`,
+                  gap: '1rem'
+                }}
+              >
                 {Array.from({ length: totalSlides }).map((_, slideIdx) => (
-                  <div key={slideIdx} className="w-full flex-shrink-0 grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {autoVariants.slice(slideIdx * itemsPerSlide, (slideIdx + 1) * itemsPerSlide).map((variant) => (
-                      <div key={variant.id} className="bg-white rounded-xl border border-slate-100 p-4 text-center">
-                        <div className="aspect-square bg-slate-50 rounded-lg mb-3 flex items-center justify-center p-3">
-                          {variant.productImage ? (
-                            <img src={variant.productImage} alt={variant.productTitle} className="h-full w-full object-contain" />
-                          ) : (
-                            <span className="text-xs text-slate-400">No img</span>
-                          )}
+                  <div 
+                    key={slideIdx} 
+                    className="w-full flex-shrink-0"
+                  >
+                    <div className={`grid gap-3 sm:gap-4`}
+                      style={{
+                        gridTemplateColumns: `repeat(${itemsPerSlide}, minmax(0, 1fr))`
+                      }}
+                    >
+                      {autoVariants.slice(slideIdx * itemsPerSlide, (slideIdx + 1) * itemsPerSlide).map((variant) => (
+                        <div key={variant.id} className="bg-white rounded-xl border border-slate-100 p-2 sm:p-4 text-center hover:shadow-md transition">
+                          <div className="aspect-square bg-slate-50 rounded-lg mb-2 sm:mb-3 flex items-center justify-center p-2 sm:p-3">
+                            {variant.productImage ? (
+                              <img src={variant.productImage} alt={variant.productTitle} className="h-full w-full object-contain" />
+                            ) : (
+                              <span className="text-xs text-slate-400">No img</span>
+                            )}
+                          </div>
+                          <h3 className="text-xs sm:text-sm font-bold text-slate-900 line-clamp-2">{variant.productTitle}</h3>
+                          <p className="text-[10px] sm:text-xs text-slate-500 line-clamp-1">{variant.title}</p>
+                          <p className="text-sm sm:text-base font-black text-slate-900 mt-1">₹{formatINR(Number(variant.price.amount))}</p>
                         </div>
-                        <h3 className="text-sm font-bold text-slate-900">{variant.productTitle}</h3>
-                        <p className="text-xs text-slate-500">{variant.title}</p>
-                        <p className="text-base font-black text-slate-900 mt-1">₹{formatINR(Number(variant.price.amount))}</p>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
 
-            <button onClick={nextSlide} className="absolute right-0 top-1/2 -translate-y-1/2 z-10 h-8 w-8 rounded-full bg-white shadow-md border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-50">
+            {/* Next Button - Hidden on very small screens */}
+            <button 
+              onClick={nextSlide}
+              className="absolute -right-3 sm:right-2 top-1/2 -translate-y-1/2 z-10 h-8 w-8 rounded-full bg-white shadow-md border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-50 transition opacity-0 group-hover:opacity-100 sm:opacity-100"
+            >
               <ChevronRight size={18} />
             </button>
           </div>
 
-          {/* Dots */}
-          <div className="flex items-center justify-center gap-1.5 mt-3">
+          {/* Dots Navigation */}
+          <div className="flex items-center justify-center gap-1.5 mt-4">
             {Array.from({ length: totalSlides }).map((_, idx) => (
-              <button key={idx} onClick={() => setAutoSlideIndex(idx)} className={`h-2 rounded-full transition-all ${idx === autoSlideIndex ? "w-5 bg-indigo-600" : "w-2 bg-slate-300"}`} />
+              <button 
+                key={idx} 
+                onClick={() => setAutoSlideIndex(idx)} 
+                className={`h-2 rounded-full transition-all ${idx === autoSlideIndex ? "w-5 bg-indigo-600" : "w-2 bg-slate-300 hover:bg-slate-400"}`}
+                aria-label={`Go to slide ${idx + 1}`}
+              />
             ))}
             <span className="ml-2 text-xs text-slate-400">{autoSlideIndex + 1} / {totalSlides}</span>
           </div>
 
           {/* Tags */}
-          <div className="flex items-center justify-center gap-2 mt-3">
+          <div className="flex flex-wrap items-center justify-center gap-2 mt-3">
             {[
               { icon: <ShoppingCart size={12} />, text: "10 Premium Items" },
               { icon: <Zap size={12} />, text: "All Skin Types" },
@@ -448,12 +478,12 @@ export default function CollectionPage({
           </div>
 
           {/* AUTO COMBO BUTTONS */}
-          <div className="flex items-center justify-center gap-3 mt-5">
-            <button onClick={addAutoToCart} disabled={isPending} className="inline-flex items-center gap-2 rounded-lg border-2 border-indigo-600 bg-white px-5 py-2.5 text-sm font-bold text-indigo-600 hover:bg-indigo-50 transition disabled:opacity-50">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-5">
+            <button onClick={addAutoToCart} disabled={isPending} className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg border-2 border-indigo-600 bg-white px-5 py-2.5 text-sm font-bold text-indigo-600 hover:bg-indigo-50 transition disabled:opacity-50">
               <ShoppingCart size={16} />
               {isPending ? "Adding..." : "Add to Cart"}
             </button>
-            <button onClick={handleAutoBuyNow} disabled={isPending} className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-indigo-700 transition disabled:opacity-50">
+            <button onClick={handleAutoBuyNow} disabled={isPending} className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-indigo-700 transition disabled:opacity-50">
               <Zap size={16} />
               Buy Now
             </button>
@@ -470,24 +500,24 @@ export default function CollectionPage({
         </div>
 
         {/* ============================================ */}
-        {/* CUSTOMIZE YOUR COMBO - EXACT LIKE IMAGE    */}
+        {/* CUSTOMIZE YOUR COMBO */}
         {/* ============================================ */}
         <section className="mb-8">
-          <div className="flex items-start justify-between mb-1">
-            <div>
+          <div className="flex flex-col sm:flex-row items-start justify-between gap-4 mb-4">
+            <div className="flex-1">
               <div className="inline-flex items-center gap-1.5 rounded-md bg-emerald-100 px-2.5 py-1 text-[10px] font-bold text-emerald-700 uppercase tracking-wider mb-2">
                 <Leaf size={10} />
                 Customize Your Combo
               </div>
-              <h2 className="text-xl sm:text-2xl font-black text-slate-900">Build Your Own Combo <span className="text-emerald-500">🌿</span></h2>
+              <h2 className="text-lg sm:text-2xl font-black text-slate-900">Build Your Own Combo <span className="text-emerald-500">🌿</span></h2>
               <p className="text-xs text-slate-500 mt-1">Choose any 10 products from below</p>
             </div>
-            <div className="flex gap-2">
-              <button onClick={addCustomToCart} disabled={isPending || selectedVariants.length === 0} className="inline-flex items-center gap-1.5 rounded-lg border-2 border-indigo-600 bg-white px-4 py-2 text-xs font-bold text-indigo-600 hover:bg-indigo-50 disabled:opacity-40">
+            <div className="flex gap-2 w-full sm:w-auto">
+              <button onClick={addCustomToCart} disabled={isPending || selectedVariants.length === 0} className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 rounded-lg border-2 border-indigo-600 bg-white px-3 sm:px-4 py-2 text-xs font-bold text-indigo-600 hover:bg-indigo-50 disabled:opacity-40">
                 <ShoppingCart size={14} />
                 Add to Cart
               </button>
-              <button onClick={handleCustomBuyNow} disabled={isPending || selectedVariants.length === 0} className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-4 py-2 text-xs font-bold text-white hover:bg-indigo-700 disabled:opacity-40">
+              <button onClick={handleCustomBuyNow} disabled={isPending || selectedVariants.length === 0} className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 rounded-lg bg-indigo-600 px-3 sm:px-4 py-2 text-xs font-bold text-white hover:bg-indigo-700 disabled:opacity-40">
                 <Zap size={14} />
                 Buy Now
               </button>
@@ -495,12 +525,12 @@ export default function CollectionPage({
           </div>
 
           {/* Product Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 mt-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3 mt-4">
             {allVariants.map((variant) => {
               const isSelected = selectedVariantIds.includes(variant.id);
               const qty = customQuantities[variant.id] || 0;
               return (
-                <div key={variant.id} className={`relative bg-white rounded-xl border p-3 transition-all ${isSelected ? "border-emerald-300 shadow-md" : "border-slate-100 hover:border-slate-200"}`}>
+                <div key={variant.id} className={`relative bg-white rounded-xl border p-2 sm:p-3 transition-all ${isSelected ? "border-emerald-300 shadow-md" : "border-slate-100 hover:border-slate-200"}`}>
                   {/* Checkmark or Plus */}
                   {isSelected ? (
                     <button onClick={() => toggleVariant(variant.id)} className="absolute -top-2 -right-2 h-5 w-5 rounded-full bg-emerald-500 text-white flex items-center justify-center z-10">
@@ -512,24 +542,24 @@ export default function CollectionPage({
                     </button>
                   )}
 
-                  <div className="aspect-square bg-slate-50 rounded-lg mb-2 flex items-center justify-center p-2">
+                  <div className="aspect-square bg-slate-50 rounded-lg mb-1 sm:mb-2 flex items-center justify-center p-2">
                     {variant.productImage ? (
                       <img src={variant.productImage} alt={variant.productTitle} className="h-full w-full object-contain" />
                     ) : (
                       <span className="text-xs text-slate-400">No img</span>
                     )}
                   </div>
-                  <h3 className="text-xs font-bold text-slate-900 line-clamp-1">{variant.productTitle}</h3>
-                  <p className="text-[10px] text-slate-500">{variant.title}</p>
-                  <p className="text-sm font-black text-slate-900 mt-0.5">₹{formatINR(Number(variant.price.amount))}</p>
+                  <h3 className="text-[10px] sm:text-xs font-bold text-slate-900 line-clamp-1">{variant.productTitle}</h3>
+                  <p className="text-[9px] sm:text-[10px] text-slate-500 line-clamp-1">{variant.title}</p>
+                  <p className="text-xs sm:text-sm font-black text-slate-900 mt-0.5">₹{formatINR(Number(variant.price.amount))}</p>
 
                   {/* Quantity */}
-                  <div className="flex items-center justify-center gap-1 mt-2">
-                    <button onClick={() => updateQuantity(variant.id, -1)} className="h-6 w-6 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-50 text-xs">
+                  <div className="flex items-center justify-center gap-1 mt-1.5">
+                    <button onClick={() => updateQuantity(variant.id, -1)} className="h-5 w-5 sm:h-6 sm:w-6 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-50 text-xs">
                       <Minus size={10} />
                     </button>
-                    <span className="w-5 text-center text-xs font-bold">{qty}</span>
-                    <button onClick={() => updateQuantity(variant.id, 1)} className="h-6 w-6 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-50 text-xs">
+                    <span className="w-4 sm:w-5 text-center text-xs font-bold">{qty}</span>
+                    <button onClick={() => updateQuantity(variant.id, 1)} className="h-5 w-5 sm:h-6 sm:w-6 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-50 text-xs">
                       <Plus size={10} />
                     </button>
                   </div>
@@ -545,30 +575,30 @@ export default function CollectionPage({
         </section>
 
         {/* ============================================ */}
-        {/* GRAND TOTAL - EXACT LIKE IMAGE             */}
+        {/* GRAND TOTAL */}
         {/* ============================================ */}
-        <section className="mb-8 bg-white rounded-xl border border-slate-100 p-5">
-          <div className="grid grid-cols-3 gap-4 mb-4">
-            <div>
+        <section className="mb-8 bg-white rounded-xl border border-slate-100 p-4 sm:p-5">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-4">
+            <div className="text-center sm:text-left">
               <p className="text-xs text-slate-500">Total MRP</p>
-              <p className="text-lg font-black text-slate-900">₹{formatINR(grandTotalMrp)}</p>
+              <p className="text-lg sm:text-xl font-black text-slate-900">₹{formatINR(grandTotalMrp)}</p>
             </div>
-            <div>
+            <div className="text-center sm:text-left">
               <p className="text-xs text-emerald-600">You Save</p>
-              <p className="text-lg font-black text-emerald-600">₹{formatINR(grandYouSave)} <span className="text-xs">(32% OFF)</span></p>
+              <p className="text-lg sm:text-xl font-black text-emerald-600">₹{formatINR(grandYouSave)} <span className="text-xs">(32% OFF)</span></p>
             </div>
-            <div>
+            <div className="text-center sm:text-left">
               <p className="text-xs text-indigo-600">Combo Price</p>
-              <p className="text-lg font-black text-indigo-600">₹{formatINR(grandComboPrice)}</p>
+              <p className="text-lg sm:text-xl font-black text-indigo-600">₹{formatINR(grandComboPrice)}</p>
             </div>
           </div>
 
-          <div className="flex items-center justify-center gap-3">
-            <button onClick={addAllToCart} disabled={isPending || totalItems === 0} className="inline-flex items-center gap-2 rounded-lg border-2 border-indigo-600 bg-white px-6 py-2.5 text-sm font-bold text-indigo-600 hover:bg-indigo-50 disabled:opacity-40">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <button onClick={addAllToCart} disabled={isPending || totalItems === 0} className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg border-2 border-indigo-600 bg-white px-6 py-2.5 text-sm font-bold text-indigo-600 hover:bg-indigo-50 disabled:opacity-40">
               <ShoppingCart size={16} />
               Add to Cart
             </button>
-            <button onClick={handleBuyAllNow} disabled={isPending || totalItems === 0} className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-6 py-2.5 text-sm font-bold text-white hover:bg-indigo-700 disabled:opacity-40">
+            <button onClick={handleBuyAllNow} disabled={isPending || totalItems === 0} className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-6 py-2.5 text-sm font-bold text-white hover:bg-indigo-700 disabled:opacity-40">
               <Zap size={16} />
               Buy Now
             </button>
@@ -577,7 +607,7 @@ export default function CollectionPage({
 
         {/* Message Toast */}
         {message && (
-          <div className="fixed top-24 left-1/2 -translate-x-1/2 z-50 animate-toast-in">
+          <div className="fixed top-24 left-1/2 -translate-x-1/2 z-50 animate-toast-in px-4">
             <div className="rounded-xl bg-emerald-500 text-white px-5 py-2.5 shadow-xl font-bold text-sm flex items-center gap-2">
               <Check size={16} />
               {message}
@@ -585,7 +615,7 @@ export default function CollectionPage({
           </div>
         )}
 
-        {/* Trust Badges - EXACT LIKE IMAGE */}
+        {/* Trust Badges */}
         <section className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
           {[
             { icon: "🚚", title: "Free Shipping", copy: "Above ₹499" },
@@ -593,8 +623,8 @@ export default function CollectionPage({
             { icon: "🔄", title: "Easy Returns", copy: "Hassle Free" },
             { icon: "🏆", title: "Best Value", copy: "Save More" },
           ].map((item) => (
-            <div key={item.title} className="flex items-center gap-3 rounded-lg border border-slate-100 bg-white p-3">
-              <span className="text-xl">{item.icon}</span>
+            <div key={item.title} className="flex items-center gap-2 sm:gap-3 rounded-lg border border-slate-100 bg-white p-2 sm:p-3">
+              <span className="text-lg sm:text-xl">{item.icon}</span>
               <div>
                 <p className="text-xs font-bold text-slate-900">{item.title}</p>
                 <p className="text-[10px] text-slate-500">{item.copy}</p>
