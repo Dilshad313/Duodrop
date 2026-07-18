@@ -1,3 +1,4 @@
+// app/products/[id]/page.tsx
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";

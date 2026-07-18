@@ -6,14 +6,6 @@ import { Search, User, ShoppingBag, ChevronDown, Menu, X } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useRouter } from "next/navigation";
 
-const navItems = [
-  { href: "/", label: "Home" },
-  { href: "/beauty-tools", label: "Beauty Tools" },
-  { href: "/beauty-combos", label: "Beauty Combos" },
-  { href: "/contact", label: "Contact" },
-  { href: "/return-policy", label: "Return Policy" },
-];
-
 export default function Navbar() {
   const { cartCount } = useCart();
   const router = useRouter();
@@ -42,12 +34,12 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-[#143255] backdrop-blur-2xl">
       <nav className="mx-auto flex h-20 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        {/* Brand – text color #2FEBD8 */}
+        {/* Brand */}
         <Link href="/" className="text-2xl font-black tracking-tight text-[#2FEBD8] transition hover:opacity-80">
           Duodrop
         </Link>
 
-        {/* Desktop Nav Links – color #2FEBD8 */}
+        {/* Desktop Nav Links */}
         <div className="hidden items-center gap-6 text-sm font-semibold text-[#2FEBD8] md:flex">
           <Link href="/" className="transition hover:text-white/90">
             Home
@@ -64,18 +56,25 @@ export default function Navbar() {
             {shopDropdownOpen && (
               <div className="absolute left-0 mt-2 w-48 rounded-xl border border-white/10 bg-[#143255] p-2 shadow-xl backdrop-blur-xl">
                 <Link
-                  href="/beauty-tools"
+                  href="/collections/beauty-tools"
                   className="block rounded-lg px-4 py-2 text-sm font-medium text-[#2FEBD8] transition hover:bg-white/10 hover:text-white/90"
                   onClick={() => setShopDropdownOpen(false)}
                 >
                   Beauty Tools
                 </Link>
                 <Link
-                  href="/beauty-combos"
+                  href="/collections/beauty-combos"
                   className="block rounded-lg px-4 py-2 text-sm font-medium text-[#2FEBD8] transition hover:bg-white/10 hover:text-white/90"
                   onClick={() => setShopDropdownOpen(false)}
                 >
                   Beauty Combos
+                </Link>
+                <Link
+                  href="/products"
+                  className="block rounded-lg px-4 py-2 text-sm font-medium text-[#2FEBD8] transition hover:bg-white/10 hover:text-white/90"
+                  onClick={() => setShopDropdownOpen(false)}
+                >
+                  All Products
                 </Link>
               </div>
             )}
@@ -97,7 +96,7 @@ export default function Navbar() {
               placeholder="Search..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-10 w-40 rounded-full border border-white/20 bg-white/10 px-4 pr-10 text-sm text-white placeholder-white/50 outline-none transition focus:border-indigo-400 focus:shadow-md lg:w-56"
+              className="h-10 w-40 rounded-full border border-white/20 bg-white/10 px-4 pr-10 text-sm text-white placeholder-white/50 outline-none transition focus:border-[#2FEBD8] focus:shadow-md lg:w-56"
             />
             <button
               type="submit"
@@ -153,11 +152,14 @@ export default function Navbar() {
             <Link href="/" className="transition hover:text-white/90" onClick={() => setMobileMenuOpen(false)}>
               Home
             </Link>
-            <Link href="/beauty-tools" className="transition hover:text-white/90" onClick={() => setMobileMenuOpen(false)}>
+            <Link href="/collections/beauty-tools" className="transition hover:text-white/90" onClick={() => setMobileMenuOpen(false)}>
               Beauty Tools
             </Link>
-            <Link href="/beauty-combos" className="transition hover:text-white/90" onClick={() => setMobileMenuOpen(false)}>
+            <Link href="/collections/beauty-combos" className="transition hover:text-white/90" onClick={() => setMobileMenuOpen(false)}>
               Beauty Combos
+            </Link>
+            <Link href="/products" className="transition hover:text-white/90" onClick={() => setMobileMenuOpen(false)}>
+              All Products
             </Link>
             <Link href="/contact" className="transition hover:text-white/90" onClick={() => setMobileMenuOpen(false)}>
               Contact

@@ -9,7 +9,6 @@ type Variant = {
   title: string;
   price: { amount: string };
   availableForSale?: boolean;
-  image?: { url: string; altText?: string };
 };
 
 type Product = {
@@ -25,11 +24,14 @@ export default function ProductDetailCombo({ product }: { product: Product }) {
   const [isPending, startTransition] = useTransition();
   const [message, setMessage] = useState<string | null>(null);
 
+  // Auto-selected variants (first 5)
   const autoVariants = product.variants.slice(0, 5);
 
+  // Custom selection state
   const [selectedVariantIds, setSelectedVariantIds] = useState<string[]>([]);
   const [customQuantities, setCustomQuantities] = useState<Record<string, number>>({});
 
+  // Toggle selection - click anywhere on card
   const toggleVariant = (id: string) => {
     setSelectedVariantIds((prev) =>
       prev.includes(id) ? prev.filter((v) => v !== id) : [...prev, id]
@@ -60,6 +62,59 @@ export default function ProductDetailCombo({ product }: { product: Product }) {
   const youSave = (totalMrp * discountPercent) / 100;
   const comboPrice = totalMrp - youSave;
 
+  // Add auto products to cart
+  const addAutoToCart = async () => {
+    if (autoVariants.length === 0) {
+      setMessage("No auto products available.");
+      return;
+    }
+    startTransition(async () => {
+      try {
+        for (const variant of autoVariants) {
+          await addToCart({
+            variantId: variant.id,
+            quantity: 1,
+            title: variant.title,
+            price: variant.price.amount,
+          });
+        }
+        setMessage(`${autoVariants.length} auto combo items added to cart.`);
+      } catch (error) {
+        setMessage("Failed to add to cart.");
+      }
+    });
+  };
+
+  // Buy Now - Auto products
+  const handleAutoBuyNow = async () => {
+    if (autoVariants.length === 0) {
+      setMessage("No auto products available.");
+      return;
+    }
+    startTransition(async () => {
+      try {
+        const lines = autoVariants.map((v) => ({
+          merchandiseId: v.id,
+          quantity: 1,
+        }));
+        const response = await fetch("/api/cart", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ lines }),
+        });
+        const data = await response.json();
+        if (data.cart?.checkoutUrl) {
+          window.location.href = data.cart.checkoutUrl;
+        } else {
+          setMessage("Checkout unavailable.");
+        }
+      } catch {
+        setMessage("Checkout failed.");
+      }
+    });
+  };
+
+  // Add custom products to cart
   const addCustomToCart = async () => {
     if (selectedVariants.length === 0) {
       setMessage("Please select at least one product.");
@@ -75,14 +130,15 @@ export default function ProductDetailCombo({ product }: { product: Product }) {
             price: variant.price.amount,
           });
         }
-        setMessage(`${selectedVariants.length} items added to cart.`);
+        setMessage(`${selectedVariants.length} custom items added to cart.`);
       } catch (error) {
         setMessage("Failed to add to cart.");
       }
     });
   };
 
-  const handleBuyNow = async () => {
+  // Buy Now - Custom products
+  const handleCustomBuyNow = async () => {
     if (selectedVariants.length === 0) {
       setMessage("Please select at least one product.");
       return;
@@ -117,7 +173,7 @@ export default function ProductDetailCombo({ product }: { product: Product }) {
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-2xl font-black text-slate-950">AUTO SELECT COMBO</h2>
           <span className="rounded-full bg-indigo-100 px-4 py-1.5 text-xs font-bold text-indigo-700">
-            10 Items Combo (Automatically Selected)
+            {autoVariants.length} Items Combo (Automatically Selected)
           </span>
         </div>
         <p className="mt-1 text-sm text-slate-500">
@@ -154,7 +210,7 @@ export default function ProductDetailCombo({ product }: { product: Product }) {
 
         <div className="mt-4 flex flex-wrap gap-4">
           <span className="rounded-full bg-emerald-100 px-4 py-1.5 text-xs font-bold text-emerald-700">
-            10 Premium Items
+            {autoVariants.length} Premium Items
           </span>
           <span className="rounded-full bg-blue-100 px-4 py-1.5 text-xs font-bold text-blue-700">
             All Skin Types
@@ -163,13 +219,37 @@ export default function ProductDetailCombo({ product }: { product: Product }) {
             Dermatologically Tested
           </span>
         </div>
+
+        {/* Auto Section Buttons */}
+        <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+          <button
+            onClick={addAutoToCart}
+            disabled={isPending}
+            className="flex-1 rounded-2xl bg-slate-950 px-4 py-2.5 text-xs font-bold text-white shadow-md transition hover:bg-indigo-600 disabled:opacity-60"
+          >
+            <span className="flex items-center justify-center gap-2">
+              <ShoppingCart size={14} />
+              {isPending ? "Adding..." : "Add Auto Combo"}
+            </span>
+          </button>
+          <button
+            onClick={handleAutoBuyNow}
+            disabled={isPending}
+            className="flex-1 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-600 px-4 py-2.5 text-xs font-bold text-white shadow-md transition hover:shadow-lg disabled:opacity-60"
+          >
+            <span className="flex items-center justify-center gap-2">
+              <Zap size={14} />
+              Buy Auto Combo
+            </span>
+          </button>
+        </div>
       </section>
 
       {/* CUSTOMIZE YOUR COMBO */}
       <section>
         <h2 className="text-2xl font-black text-slate-950">CUSTOMIZE YOUR COMBO</h2>
         <p className="mt-1 text-sm text-slate-500">
-          Choose any 10 products from below
+          Choose any products from below – click any product to select
         </p>
 
         <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
@@ -243,8 +323,36 @@ export default function ProductDetailCombo({ product }: { product: Product }) {
         </div>
 
         <p className="mt-4 text-sm font-medium text-indigo-600">
-          Select any 10 products to create your perfect combo and save more!
+          Select any products to create your perfect combo and save more!
         </p>
+
+        {/* Custom Section Buttons */}
+        {selectedVariants.length > 0 && (
+          <>
+            <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+              <button
+                onClick={addCustomToCart}
+                disabled={isPending}
+                className="flex-1 rounded-2xl bg-slate-950 px-4 py-2.5 text-xs font-bold text-white shadow-md transition hover:bg-indigo-600 disabled:opacity-60"
+              >
+                <span className="flex items-center justify-center gap-2">
+                  <ShoppingCart size={14} />
+                  {isPending ? "Adding..." : `Add ${selectedVariants.length} Selected`}
+                </span>
+              </button>
+              <button
+                onClick={handleCustomBuyNow}
+                disabled={isPending}
+                className="flex-1 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-600 px-4 py-2.5 text-xs font-bold text-white shadow-md transition hover:shadow-lg disabled:opacity-60"
+              >
+                <span className="flex items-center justify-center gap-2">
+                  <Zap size={14} />
+                  Buy Selected
+                </span>
+              </button>
+            </div>
+          </>
+        )}
       </section>
 
       {/* Summary */}
@@ -269,29 +377,6 @@ export default function ProductDetailCombo({ product }: { product: Product }) {
                 ₹{comboPrice.toFixed(0).toLocaleString("en-IN")}
               </p>
             </div>
-          </div>
-
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-            <button
-              onClick={addCustomToCart}
-              disabled={isPending}
-              className="flex-1 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-bold text-white shadow-md transition hover:bg-indigo-600 disabled:opacity-60"
-            >
-              <span className="flex items-center justify-center gap-2">
-                <ShoppingCart size={16} />
-                {isPending ? "Adding..." : "Add to Cart"}
-              </span>
-            </button>
-            <button
-              onClick={handleBuyNow}
-              disabled={isPending}
-              className="flex-1 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-600 px-5 py-3 text-sm font-bold text-white shadow-md transition hover:shadow-lg disabled:opacity-60"
-            >
-              <span className="flex items-center justify-center gap-2">
-                <Zap size={16} />
-                Buy Now
-              </span>
-            </button>
           </div>
           {message && <p className="mt-4 text-sm font-medium text-emerald-600">{message}</p>}
         </section>

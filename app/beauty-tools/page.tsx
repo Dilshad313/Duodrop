@@ -1,28 +1,43 @@
+// app/beauty-tools/page.tsx
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
-import { GET_PRODUCTS_BY_TAG } from "@/lib/queries";
+import Footer from "@/components/Footer";
+import { GET_COLLECTION_PRODUCTS } from "@/lib/queries";
 import { isShopifyConfigured, shopifyFetch } from "@/lib/shopify";
 import { ProductNode } from "@/types/products";
 
-type ProductsResponse = {
-  products: {
-    edges: Array<{ node: ProductNode }>;
-  };
+type CollectionResponse = {
+  collectionByHandle: {
+    id: string;
+    title: string;
+    handle: string;
+    description: string;
+    products: {
+      edges: Array<{ node: ProductNode }>;
+    };
+  } | null;
 };
 
 export default async function BeautyToolsPage() {
   let products: ProductNode[] = [];
+  let collectionTitle = "Beauty Tools";
   let loadError = false;
 
   if (isShopifyConfigured()) {
     try {
-      const data = await shopifyFetch<ProductsResponse>({
-        query: GET_PRODUCTS_BY_TAG,
-        variables: { tag: "beauty-tools", first: 50 },
+      const data = await shopifyFetch<CollectionResponse>({
+        query: GET_COLLECTION_PRODUCTS,
+        variables: { handle: "beauty-tools", first: 50 },
       });
-      products = data.products.edges.map((edge) => edge.node);
+
+      if (data.collectionByHandle) {
+        collectionTitle = data.collectionByHandle.title;
+        products = data.collectionByHandle.products.edges.map((edge) => edge.node);
+      } else {
+        loadError = true;
+      }
     } catch (error) {
-      console.error("Failed to fetch beauty tools:", error);
+      console.error("Failed to fetch beauty tools collection:", error);
       loadError = true;
     }
   } else {
@@ -30,16 +45,21 @@ export default async function BeautyToolsPage() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-slate-50">
       <Navbar />
       <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <h1 className="text-4xl font-black tracking-tight text-slate-950">Beauty Tools</h1>
+          <h1 className="text-4xl font-black text-slate-950">{collectionTitle}</h1>
           <p className="mt-2 text-sm text-slate-500">{products.length} products</p>
         </div>
         {loadError && (
           <div className="rounded-2xl border border-amber-200 bg-amber-50 p-6 text-sm font-medium text-amber-900">
-            Unable to load products. Please try again later.
+            Unable to load collection. Please make sure a collection with handle "beauty-tools" exists.
+          </div>
+        )}
+        {products.length === 0 && !loadError && (
+          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-12 text-center">
+            <p className="text-slate-500">No products found in this collection.</p>
           </div>
         )}
         <section className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -78,6 +98,7 @@ export default async function BeautyToolsPage() {
           ))}
         </section>
       </main>
+      <Footer />
     </div>
   );
 }
