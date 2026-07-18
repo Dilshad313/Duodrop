@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import { SEARCH_PRODUCTS } from "@/lib/queries";
 import { isShopifyConfigured, shopifyFetch } from "@/lib/shopify";
-import { ProductNode } from "@/types/products";
+import { ProductNode } from "@/types/product";
 
 type SearchResponse = {
   products: {

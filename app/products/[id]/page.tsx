@@ -6,7 +6,7 @@ import Footer from "@/components/Footer";
 import ProductDetailCombo from "@/components/ProductDetailCombo";
 import { GET_PRODUCT_BY_ID } from "@/lib/queries";
 import { isShopifyConfigured, shopifyFetch } from "@/lib/shopify";
-import { ProductNode } from "@/types/products";
+import { ProductNode } from "@/types/product";
 
 type ProductResponse = {
   product: ProductNode | null;

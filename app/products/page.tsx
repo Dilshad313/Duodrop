@@ -3,7 +3,7 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import { GET_ALL_PRODUCTS } from "@/lib/queries";
 import { isShopifyConfigured, shopifyFetch } from "@/lib/shopify";
-import { ProductNode } from "@/types/products";
+import { ProductNode } from "@/types/product";
 
 type ProductsResponse = {
   products: {
