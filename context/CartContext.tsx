@@ -7,7 +7,9 @@ export interface CartItem {
   variantId: string;
   quantity: number;
   title?: string;
+  variantTitle?: string; // Added
   price?: string;
+  image?: string; // Added
 }
 
 interface CartContextType {
@@ -51,7 +53,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             : i
         );
       }
-      return [...prev, { ...item }];
+      return [...prev, { 
+        ...item,
+        variantTitle: item.variantTitle || "",
+        image: item.image || ""
+      }];
     });
   };
 

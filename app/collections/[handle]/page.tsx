@@ -258,19 +258,28 @@ export default function CollectionPage({
     return selectedVariants.reduce((sum, v) => sum + (customQuantities[v.id] || 1), 0);
   }, [selectedVariants, customQuantities]);
 
-  // Add AUTO to cart
-  const addAutoToCart = async () => {
-    if (autoVariants.length === 0) { setMessage("No auto products available."); return; }
-    startTransition(async () => {
-      try {
-        for (const variant of autoVariants) {
-          await addToCart({ variantId: variant.id, quantity: 1, title: variant.productTitle, price: variant.price.amount });
-        }
-        setMessage(`${autoVariants.length} items added to cart!`);
-        setTimeout(() => { setMessage(null); window.location.href = "/cart"; }, 1500);
-      } catch { setMessage("Failed to add to cart."); }
-    });
-  };
+  
+
+// Add AUTO to cart
+const addAutoToCart = async () => {
+  if (autoVariants.length === 0) { setMessage("No auto products available."); return; }
+  startTransition(async () => {
+    try {
+      for (const variant of autoVariants) {
+        await addToCart({ 
+          variantId: variant.id, 
+          quantity: 1, 
+          title: variant.productTitle,
+          variantTitle: variant.title,
+          price: variant.price.amount,
+          image: variant.productImage || ""
+        });
+      }
+      setMessage(`${autoVariants.length} items added to cart!`);
+      setTimeout(() => { setMessage(null); window.location.href = "/cart"; }, 1500);
+    } catch { setMessage("Failed to add to cart."); }
+  });
+};
 
   // Buy AUTO Now
   const handleAutoBuyNow = async () => {
@@ -287,26 +296,28 @@ export default function CollectionPage({
   };
 
   // Add CUSTOM to cart
-  const addCustomToCart = async () => {
-    if (selectedVariants.length === 0) { 
-      setMessage("Please select at least one product."); 
-      return; 
-    }
-    startTransition(async () => {
-      try {
-        for (const variant of selectedVariants) {
-          await addToCart({ 
-            variantId: variant.id, 
-            quantity: customQuantities[variant.id] || 1, 
-            title: variant.productTitle, 
-            price: variant.price.amount 
-          });
-        }
-        setMessage(`${customTotalItems} items added to cart!`);
-        setTimeout(() => { setMessage(null); window.location.href = "/cart"; }, 1500);
-      } catch { setMessage("Failed to add to cart."); }
-    });
-  };
+const addCustomToCart = async () => {
+  if (selectedVariants.length === 0) { 
+    setMessage("Please select at least one product."); 
+    return; 
+  }
+  startTransition(async () => {
+    try {
+      for (const variant of selectedVariants) {
+        await addToCart({ 
+          variantId: variant.id, 
+          quantity: customQuantities[variant.id] || 1, 
+          title: variant.productTitle,
+          variantTitle: variant.title,
+          price: variant.price.amount,
+          image: variant.productImage || ""
+        });
+      }
+      setMessage(`${customTotalItems} items added to cart!`);
+      setTimeout(() => { setMessage(null); window.location.href = "/cart"; }, 1500);
+    } catch { setMessage("Failed to add to cart."); }
+  });
+};
 
   // Buy CUSTOM Now
   const handleCustomBuyNow = async () => {

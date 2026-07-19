@@ -6,9 +6,11 @@ import Image from "next/image";
 import { useCart } from "@/context/CartContext";
 import { Minus, Plus, Trash2, ShoppingBag, ArrowLeft, Shield, Truck, RotateCcw, CreditCard } from "lucide-react";
 import Navbar from "@/components/Navbar";
+import { useState } from "react";
 
 export default function CartPage() {
-  const { cartItems, removeFromCart, updateQuantity, clearCart } = useCart();
+  const { cartItems, removeFromCart, updateQuantity, clearCart, cartCount } = useCart();
+  const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
 
   const subtotal = cartItems.reduce(
     (sum, item) => sum + Number(item.price || 0) * item.quantity,
@@ -40,6 +42,10 @@ export default function CartPage() {
       console.error(error);
       alert("Checkout failed.");
     }
+  };
+
+  const handleImageError = (variantId: string) => {
+    setImageErrors(prev => ({ ...prev, [variantId]: true }));
   };
 
   return (
@@ -78,7 +84,7 @@ export default function CartPage() {
                 Your Cart
                 {cartItems.length > 0 && (
                   <span className="ml-2 text-sm font-medium text-slate-400">
-                    ({cartItems.length} {cartItems.length === 1 ? 'item' : 'items'})
+                    ({cartCount} items)
                   </span>
                 )}
               </h1>
@@ -101,78 +107,88 @@ export default function CartPage() {
               </div>
             ) : (
               <div className="space-y-4">
-                {cartItems.map((item) => (
-                  <div
-                    key={item.variantId}
-                    className="group relative rounded-2xl bg-white p-4 shadow-sm hover:shadow-md transition-all duration-200 border border-slate-100/80"
-                  >
-                    <div className="flex flex-col sm:flex-row gap-4">
-                      {/* Product Image */}
-                      <div className="relative h-24 w-24 flex-shrink-0 rounded-xl bg-slate-50 overflow-hidden border border-slate-100">
-                        {item.image ? (
-                          <Image
-                            src={item.image}
-                            alt={item.title || "Product"}
-                            fill
-                            className="object-contain p-2"
-                          />
-                        ) : (
-                          <div className="flex h-full items-center justify-center">
-                            <ShoppingBag className="h-8 w-8 text-slate-300" />
-                          </div>
-                        )}
-                      </div>
+                {cartItems.map((item) => {
+                  const hasImage = item.image && item.image.length > 0;
+                  const hasError = imageErrors[item.variantId];
+                  const showImage = hasImage && !hasError;
+                  
+                  return (
+                    <div
+                      key={item.variantId}
+                      className="group relative rounded-2xl bg-white p-4 shadow-sm hover:shadow-md transition-all duration-200 border border-slate-100/80"
+                    >
+                      <div className="flex flex-col sm:flex-row gap-4">
+                        {/* Product Image */}
+                        <div className="relative h-24 w-24 flex-shrink-0 rounded-xl bg-slate-50 overflow-hidden border border-slate-100">
+                          {showImage ? (
+                            <Image
+                              src={item.image as string}
+                              alt={item.title || "Product"}
+                              fill
+                              className="object-contain p-2"
+                              onError={() => handleImageError(item.variantId)}
+                              unoptimized
+                            />
+                          ) : (
+                            <div className="flex h-full items-center justify-center">
+                              <ShoppingBag className="h-8 w-8 text-slate-300" />
+                            </div>
+                          )}
+                        </div>
 
-                      {/* Product Info */}
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-bold text-slate-950 text-sm sm:text-base line-clamp-2">
-                          {item.title || "Product"}
-                        </h3>
-                        <p className="text-xs text-slate-500 mt-0.5">
-                          {item.variantTitle || "Default"}
-                        </p>
-                        
-                        {/* Price and Quantity */}
-                        <div className="flex flex-wrap items-center gap-3 mt-2">
-                          <div className="flex items-center rounded-lg border border-slate-200 bg-white">
-                            <button
-                              onClick={() => updateQuantity(item.variantId, item.quantity - 1)}
-                              className="grid h-8 w-8 place-items-center text-slate-600 hover:bg-slate-50 transition-colors rounded-l-lg"
-                            >
-                              <Minus size={14} />
-                            </button>
-                            <span className="w-8 text-center text-sm font-bold">{item.quantity}</span>
-                            <button
-                              onClick={() => updateQuantity(item.variantId, item.quantity + 1)}
-                              className="grid h-8 w-8 place-items-center text-slate-600 hover:bg-slate-50 transition-colors rounded-r-lg"
-                            >
-                              <Plus size={14} />
-                            </button>
-                          </div>
+                        {/* Product Info */}
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-bold text-slate-950 text-sm sm:text-base line-clamp-2">
+                            {item.title || "Product"}
+                          </h3>
+                          {item.variantTitle && item.variantTitle.length > 0 && (
+                            <p className="text-xs text-slate-500 mt-0.5">
+                              {item.variantTitle}
+                            </p>
+                          )}
                           
-                          <div className="flex items-center gap-2">
-                            <span className="font-bold text-slate-950">
-                              ₹{(Number(item.price || 0) * item.quantity).toLocaleString("en-IN")}
-                            </span>
-                            {item.quantity > 1 && (
-                              <span className="text-xs text-slate-400">
-                                ₹{Number(item.price || 0).toLocaleString("en-IN")} each
+                          {/* Price and Quantity */}
+                          <div className="flex flex-wrap items-center gap-3 mt-2">
+                            <div className="flex items-center rounded-lg border border-slate-200 bg-white">
+                              <button
+                                onClick={() => updateQuantity(item.variantId, item.quantity - 1)}
+                                className="grid h-8 w-8 place-items-center text-slate-600 hover:bg-slate-50 transition-colors rounded-l-lg"
+                              >
+                                <Minus size={14} />
+                              </button>
+                              <span className="w-8 text-center text-sm font-bold">{item.quantity}</span>
+                              <button
+                                onClick={() => updateQuantity(item.variantId, item.quantity + 1)}
+                                className="grid h-8 w-8 place-items-center text-slate-600 hover:bg-slate-50 transition-colors rounded-r-lg"
+                              >
+                                <Plus size={14} />
+                              </button>
+                            </div>
+                            
+                            <div className="flex items-center gap-2">
+                              <span className="font-bold text-slate-950">
+                                ₹{(Number(item.price || 0) * item.quantity).toLocaleString("en-IN")}
                               </span>
-                            )}
+                              {item.quantity > 1 && (
+                                <span className="text-xs text-slate-400">
+                                  ₹{Number(item.price || 0).toLocaleString("en-IN")} each
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
-                      </div>
 
-                      {/* Remove Button */}
-                      <button
-                        onClick={() => removeFromCart(item.variantId)}
-                        className="absolute top-2 right-2 sm:relative sm:top-auto sm:right-auto rounded-full p-1.5 text-slate-400 hover:text-rose-500 hover:bg-rose-50 transition-all"
-                      >
-                        <Trash2 size={18} />
-                      </button>
+                        {/* Remove Button */}
+                        <button
+                          onClick={() => removeFromCart(item.variantId)}
+                          className="absolute top-2 right-2 sm:relative sm:top-auto sm:right-auto rounded-full p-1.5 text-slate-400 hover:text-rose-500 hover:bg-rose-50 transition-all"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
