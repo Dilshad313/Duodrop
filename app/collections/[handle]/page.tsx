@@ -379,7 +379,7 @@ export default function CollectionPage({
         {/* AUTO SELECT COMBO - IMPROVED MOBILE CAROUSEL */}
         {/* ============================================ */}
         <section className="mb-10">
-          {/* Header with summary */}
+          {/* Header */}
           <div className="flex flex-col sm:flex-row items-start justify-between gap-4 mb-4">
             <div className="flex-1">
               <div className="inline-flex items-center gap-1.5 rounded-md bg-indigo-100 px-2.5 py-1 text-[10px] font-bold text-indigo-700 uppercase tracking-wider mb-2">
@@ -393,17 +393,6 @@ export default function CollectionPage({
               <p className="text-[10px] font-bold uppercase tracking-wider text-indigo-200">Best Value</p>
               <p className="text-sm font-black">SAVE ₹{formatINR(autoYouSave)}</p>
             </div>
-          </div>
-
-          {/* Summary bar - shows count and price */}
-          <div className="bg-indigo-50 rounded-lg px-4 py-2.5 mb-4 flex items-center justify-center gap-2 text-sm">
-            <span className="font-bold text-indigo-700">{autoTotalItems} items</span>
-            <span className="text-slate-400">|</span>
-            <span className="text-slate-600">Combo Price:</span>
-            <span className="font-black text-indigo-700">₹{formatINR(autoComboPrice)}</span>
-            <span className="text-xs text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-full font-bold">
-              Save ₹{formatINR(autoYouSave)}
-            </span>
           </div>
 
           {/* Subtitle */}
@@ -510,24 +499,37 @@ export default function CollectionPage({
             ))}
           </div>
 
-          {/* AUTO COMBO BUTTONS - Always clickable */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-5">
-            <button
-              onClick={addAutoToCart}
-              disabled={isPending}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg border-2 border-indigo-600 bg-white px-5 py-2.5 text-sm font-bold text-indigo-600 hover:bg-indigo-50 transition disabled:opacity-50"
-            >
-              <ShoppingCart size={16} />
-              {isPending ? "Adding..." : "Add to Cart"}
-            </button>
-            <button
-              onClick={handleAutoBuyNow}
-              disabled={isPending}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-indigo-700 transition disabled:opacity-50"
-            >
-              <Zap size={16} />
-              Buy Now
-            </button>
+          {/* AUTO COMBO BUTTONS WITH PRICE AND COUNT BELOW */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mt-5">
+            {/* Add to Cart Button Group */}
+            <div className="flex flex-col items-center gap-1 w-full sm:w-auto">
+              <button
+                onClick={addAutoToCart}
+                disabled={isPending}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg border-2 border-indigo-600 bg-white px-6 py-2.5 text-sm font-bold text-indigo-600 hover:bg-indigo-50 transition disabled:opacity-50"
+              >
+                <ShoppingCart size={16} />
+                {isPending ? "Adding..." : "Add to Cart"}
+              </button>
+              <span className="text-xs text-slate-500 font-medium">
+                {autoTotalItems} items · ₹{formatINR(autoComboPrice)}
+              </span>
+            </div>
+
+            {/* Buy Now Button Group */}
+            <div className="flex flex-col items-center gap-1 w-full sm:w-auto">
+              <button
+                onClick={handleAutoBuyNow}
+                disabled={isPending}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-6 py-2.5 text-sm font-bold text-white hover:bg-indigo-700 transition disabled:opacity-50"
+              >
+                <Zap size={16} />
+                Buy Now
+              </button>
+              <span className="text-xs text-slate-500 font-medium">
+                {autoTotalItems} items · ₹{formatINR(autoComboPrice)}
+              </span>
+            </div>
           </div>
         </section>
 
@@ -553,15 +555,12 @@ export default function CollectionPage({
               <h2 className="text-lg sm:text-2xl font-black text-slate-900">Build Your Own Combo <span className="text-emerald-500">🌿</span></h2>
               <p className="text-xs text-slate-500 mt-1">Choose any products from below</p>
             </div>
-            {/* Selection summary badge - shows count and price */}
-            <div className="rounded-lg bg-emerald-50 px-4 py-2 text-center whitespace-nowrap border border-emerald-200">
+            {/* Selection count badge */}
+            <div className="rounded-lg bg-emerald-100 px-3 py-1.5 text-center whitespace-nowrap">
               <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-700">Selected</p>
               <p className="text-sm font-black text-emerald-700">
-                {customTotalItems > 0 ? `${customTotalItems} items · ₹${formatINR(customComboPrice)}` : 'No items selected'}
+                {customTotalItems > 0 ? `${customTotalItems} items` : '0 items'}
               </p>
-              {customTotalItems > 0 && (
-                <p className="text-[10px] text-emerald-600">Save ₹{formatINR(customYouSave)}</p>
-              )}
             </div>
           </div>
 
@@ -625,24 +624,49 @@ export default function CollectionPage({
             })}
           </div>
 
-          {/* CUSTOM BUTTONS - Always clickable */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-5 pt-4 border-t border-slate-200">
-            <button
-              onClick={addCustomToCart}
-              disabled={isPending}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg border-2 border-emerald-600 bg-white px-5 py-2.5 text-sm font-bold text-emerald-600 hover:bg-emerald-50 disabled:opacity-50 transition"
-            >
-              <ShoppingCart size={16} />
-              {isPending ? "Adding..." : "Add to Cart"}
-            </button>
-            <button
-              onClick={handleCustomBuyNow}
-              disabled={isPending}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-emerald-700 disabled:opacity-50 transition"
-            >
-              <Zap size={16} />
-              Buy Now
-            </button>
+          {/* CUSTOM BUTTONS WITH PRICE AND COUNT BELOW */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mt-5 pt-4 border-t border-slate-200">
+            {/* Add to Cart Button Group */}
+            <div className="flex flex-col items-center gap-1 w-full sm:w-auto">
+              <button
+                onClick={addCustomToCart}
+                disabled={isPending}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg border-2 border-emerald-600 bg-white px-6 py-2.5 text-sm font-bold text-emerald-600 hover:bg-emerald-50 disabled:opacity-50 transition"
+              >
+                <ShoppingCart size={16} />
+                {isPending ? "Adding..." : "Add to Cart"}
+              </button>
+              {customTotalItems > 0 ? (
+                <span className="text-xs text-slate-500 font-medium">
+                  {customTotalItems} items · ₹{formatINR(customComboPrice)}
+                </span>
+              ) : (
+                <span className="text-xs text-slate-400 font-medium">
+                  No items selected
+                </span>
+              )}
+            </div>
+
+            {/* Buy Now Button Group */}
+            <div className="flex flex-col items-center gap-1 w-full sm:w-auto">
+              <button
+                onClick={handleCustomBuyNow}
+                disabled={isPending}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-emerald-600 px-6 py-2.5 text-sm font-bold text-white hover:bg-emerald-700 disabled:opacity-50 transition"
+              >
+                <Zap size={16} />
+                Buy Now
+              </button>
+              {customTotalItems > 0 ? (
+                <span className="text-xs text-slate-500 font-medium">
+                  {customTotalItems} items · ₹{formatINR(customComboPrice)}
+                </span>
+              ) : (
+                <span className="text-xs text-slate-400 font-medium">
+                  No items selected
+                </span>
+              )}
+            </div>
           </div>
 
           <p className="text-center text-xs text-emerald-600 mt-4 flex items-center justify-center gap-1">
