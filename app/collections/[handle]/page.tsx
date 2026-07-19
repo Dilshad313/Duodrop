@@ -124,7 +124,8 @@ export default function CollectionPage({
         return;
       }
       try {
-        const data = await shopifyFetch({
+        // ✅ FIXED: Added CollectionResponse generic type
+        const data = await shopifyFetch<CollectionResponse>({
           query: GET_COLLECTION_PRODUCTS,
           variables: { handle, first: 50 },
         });
@@ -718,4 +719,4 @@ export default function CollectionPage({
       `}</style>
     </>
   );
-                   }
+}
