@@ -1232,7 +1232,7 @@ export default function CollectionPage({
         <section className="mb-8 bg-white rounded-xl border border-slate-100 p-4 sm:p-5">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-4">
             <div className="text-center sm:text-left">
-              <p className="text-xs text-slate-500">Total MRP</p>
+              <p className="text-xs text-slate-500">Total</p>
               <p className="text-lg sm:text-xl font-black text-slate-900">₹{formatINR(grandTotalMrp)}</p>
             </div>
             <div className="text-center sm:text-left">
