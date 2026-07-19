@@ -124,7 +124,6 @@ export default function CollectionPage({
         return;
       }
       try {
-        // ✅ FIXED: Added CollectionResponse generic type
         const data = await shopifyFetch<CollectionResponse>({
           query: GET_COLLECTION_PRODUCTS,
           variables: { handle, first: 50 },
@@ -253,11 +252,10 @@ export default function CollectionPage({
   const customYouSave = (customTotalMrp * customDiscountPercent) / 100;
   const customComboPrice = customTotalMrp - customYouSave;
 
-  // Grand totals
-  const grandTotalMrp = autoTotalMrp + customTotalMrp;
-  const grandYouSave = autoYouSave + customYouSave;
-  const grandComboPrice = autoComboPrice + customComboPrice;
-  const totalItems = autoVariants.length + selectedVariants.length;
+  // Total items count for custom
+  const customTotalItems = useMemo(() => {
+    return selectedVariants.reduce((sum, v) => sum + (customQuantities[v.id] || 1), 0);
+  }, [selectedVariants, customQuantities]);
 
   // Add AUTO to cart
   const addAutoToCart = async () => {
@@ -295,7 +293,7 @@ export default function CollectionPage({
         for (const variant of selectedVariants) {
           await addToCart({ variantId: variant.id, quantity: customQuantities[variant.id] || 1, title: variant.productTitle, price: variant.price.amount });
         }
-        setMessage(`${selectedVariants.length} items added to cart!`);
+        setMessage(`${customTotalItems} items added to cart!`);
         setTimeout(() => { setMessage(null); window.location.href = "/cart"; }, 1500);
       } catch { setMessage("Failed to add to cart."); }
     });
@@ -307,40 +305,6 @@ export default function CollectionPage({
     startTransition(async () => {
       try {
         const lines = selectedVariants.map((v) => ({ merchandiseId: v.id, quantity: customQuantities[v.id] || 1 }));
-        const response = await fetch("/api/cart", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ lines }) });
-        const data = await response.json();
-        if (data.cart?.checkoutUrl) window.location.href = data.cart.checkoutUrl;
-        else setMessage("Checkout unavailable.");
-      } catch { setMessage("Checkout failed."); }
-    });
-  };
-
-  // Add ALL to cart
-  const addAllToCart = async () => {
-    if (totalItems === 0) { setMessage("No products selected."); return; }
-    startTransition(async () => {
-      try {
-        for (const variant of autoVariants) {
-          await addToCart({ variantId: variant.id, quantity: 1, title: variant.productTitle, price: variant.price.amount });
-        }
-        for (const variant of selectedVariants) {
-          await addToCart({ variantId: variant.id, quantity: customQuantities[variant.id] || 1, title: variant.productTitle, price: variant.price.amount });
-        }
-        setMessage(`${totalItems} items added to cart!`);
-        setTimeout(() => { setMessage(null); window.location.href = "/cart"; }, 1500);
-      } catch { setMessage("Failed to add to cart."); }
-    });
-  };
-
-  // Buy ALL Now
-  const handleBuyAllNow = async () => {
-    if (totalItems === 0) { setMessage("No products selected."); return; }
-    startTransition(async () => {
-      try {
-        const lines = [
-          ...autoVariants.map((v) => ({ merchandiseId: v.id, quantity: 1 })),
-          ...selectedVariants.map((v) => ({ merchandiseId: v.id, quantity: customQuantities[v.id] || 1 })),
-        ];
         const response = await fetch("/api/cart", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ lines }) });
         const data = await response.json();
         if (data.cart?.checkoutUrl) window.location.href = data.cart.checkoutUrl;
@@ -516,24 +480,34 @@ export default function CollectionPage({
             ))}
           </div>
 
-          {/* AUTO COMBO BUTTONS */}
+          {/* AUTO COMBO BUTTONS WITH PRICE AND COUNT */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-5">
-            <button
-              onClick={addAutoToCart}
-              disabled={isPending}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg border-2 border-indigo-600 bg-white px-5 py-2.5 text-sm font-bold text-indigo-600 hover:bg-indigo-50 transition disabled:opacity-50"
-            >
-              <ShoppingCart size={16} />
-              {isPending ? "Adding..." : "Add to Cart"}
-            </button>
-            <button
-              onClick={handleAutoBuyNow}
-              disabled={isPending}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-indigo-700 transition disabled:opacity-50"
-            >
-              <Zap size={16} />
-              Buy Now
-            </button>
+            <div className="w-full sm:w-auto flex flex-col items-center gap-1">
+              <button
+                onClick={addAutoToCart}
+                disabled={isPending}
+                className="w-full inline-flex items-center justify-center gap-2 rounded-lg border-2 border-indigo-600 bg-white px-5 py-2.5 text-sm font-bold text-indigo-600 hover:bg-indigo-50 transition disabled:opacity-50"
+              >
+                <ShoppingCart size={16} />
+                {isPending ? "Adding..." : "Add to Cart"}
+              </button>
+              <p className="text-xs text-slate-500">
+                {autoVariants.length} items · ₹{formatINR(autoComboPrice)}
+              </p>
+            </div>
+            <div className="w-full sm:w-auto flex flex-col items-center gap-1">
+              <button
+                onClick={handleAutoBuyNow}
+                disabled={isPending}
+                className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-indigo-700 transition disabled:opacity-50"
+              >
+                <Zap size={16} />
+                Buy Now
+              </button>
+              <p className="text-xs text-slate-500">
+                {autoVariants.length} items · ₹{formatINR(autoComboPrice)}
+              </p>
+            </div>
           </div>
         </section>
 
@@ -559,24 +533,10 @@ export default function CollectionPage({
               <h2 className="text-lg sm:text-2xl font-black text-slate-900">Build Your Own Combo <span className="text-emerald-500">🌿</span></h2>
               <p className="text-xs text-slate-500 mt-1">Choose any products from below</p>
             </div>
-            {/* CUSTOM BUTTONS MOVED HERE */}
-            <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-              <button
-                onClick={addCustomToCart}
-                disabled={isPending || selectedVariants.length === 0}
-                className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 rounded-lg border-2 border-emerald-600 bg-white px-4 py-2 text-sm font-bold text-emerald-600 hover:bg-emerald-50 disabled:opacity-40 transition"
-              >
-                <ShoppingCart size={16} />
-                Add to Cart
-              </button>
-              <button
-                onClick={handleCustomBuyNow}
-                disabled={isPending || selectedVariants.length === 0}
-                className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-bold text-white hover:bg-emerald-700 disabled:opacity-40 transition"
-              >
-                <Zap size={16} />
-                Buy Now
-              </button>
+            {/* Selection count badge */}
+            <div className="rounded-lg bg-emerald-100 px-3 py-1.5 text-center whitespace-nowrap">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-700">Selected</p>
+              <p className="text-sm font-black text-emerald-700">{customTotalItems} items</p>
             </div>
           </div>
 
@@ -639,45 +599,40 @@ export default function CollectionPage({
               );
             })}
           </div>
-          <p className="text-center text-xs text-emerald-600 mt-3 flex items-center justify-center gap-1">
+
+          {/* CUSTOM BUTTONS BELOW PRODUCTS WITH PRICE AND COUNT */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-5 pt-4 border-t border-slate-200">
+            <div className="w-full sm:w-auto flex flex-col items-center gap-1">
+              <button
+                onClick={addCustomToCart}
+                disabled={isPending || selectedVariants.length === 0}
+                className="w-full inline-flex items-center justify-center gap-2 rounded-lg border-2 border-emerald-600 bg-white px-5 py-2.5 text-sm font-bold text-emerald-600 hover:bg-emerald-50 disabled:opacity-40 transition"
+              >
+                <ShoppingCart size={16} />
+                {isPending ? "Adding..." : "Add to Cart"}
+              </button>
+              <p className="text-xs text-slate-500">
+                {customTotalItems} items · ₹{formatINR(customComboPrice)}
+              </p>
+            </div>
+            <div className="w-full sm:w-auto flex flex-col items-center gap-1">
+              <button
+                onClick={handleCustomBuyNow}
+                disabled={isPending || selectedVariants.length === 0}
+                className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-emerald-700 disabled:opacity-40 transition"
+              >
+                <Zap size={16} />
+                Buy Now
+              </button>
+              <p className="text-xs text-slate-500">
+                {customTotalItems} items · ₹{formatINR(customComboPrice)}
+              </p>
+            </div>
+          </div>
+
+          <p className="text-center text-xs text-emerald-600 mt-4 flex items-center justify-center gap-1">
             <Leaf size={12} /> Select products to create your perfect combo and save more!
           </p>
-        </section>
-
-        {/* ============================================ */}
-        {/* GRAND TOTAL */}
-        {/* ============================================ */}
-        <section className="mb-8 bg-white rounded-xl border border-slate-100 p-4 sm:p-5">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-4">
-            <div className="text-center sm:text-left">
-              <p className="text-xs text-slate-500">Total MRP</p>
-              <p className="text-lg sm:text-xl font-black text-slate-900">₹{formatINR(grandTotalMrp)}</p>
-            </div>
-            <div className="text-center sm:text-left">
-              <p className="text-xs text-emerald-600">You Save</p>
-              <p className="text-lg sm:text-xl font-black text-emerald-600">₹{formatINR(grandYouSave)} <span className="text-xs">(32% OFF)</span></p>
-            </div>
-            <div className="text-center sm:text-left">
-              <p className="text-xs text-indigo-600">Combo Price</p>
-              <p className="text-lg sm:text-xl font-black text-indigo-600">₹{formatINR(grandComboPrice)}</p>
-            </div>
-          </div>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-            <button
-              onClick={addAllToCart}
-              disabled={isPending || totalItems === 0}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg border-2 border-indigo-600 bg-white px-6 py-2.5 text-sm font-bold text-indigo-600 hover:bg-indigo-50 disabled:opacity-40"
-            >
-              <ShoppingCart size={16} /> Add All to Cart
-            </button>
-            <button
-              onClick={handleBuyAllNow}
-              disabled={isPending || totalItems === 0}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-6 py-2.5 text-sm font-bold text-white hover:bg-indigo-700 disabled:opacity-40"
-            >
-              <Zap size={16} /> Buy All Now
-            </button>
-          </div>
         </section>
 
         {/* Message Toast */}
