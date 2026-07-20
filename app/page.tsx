@@ -6,7 +6,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { GET_ALL_COLLECTIONS } from "@/lib/queries";
 import { isShopifyConfigured, shopifyFetch } from "@/lib/shopify";
-import { Truck, RefreshCw, Lock, Headphones, ArrowRight } from "lucide-react";
+import { Truck, RefreshCw, Lock, Headphones, ArrowRight, Package } from "lucide-react";
 
 // --- Metadata for the page ---
 export const metadata: Metadata = {
@@ -98,46 +98,64 @@ export default async function HomePage() {
       <Navbar />
 
       <main>
-        {/* Hero Section */}
-        <section className="relative h-[90vh] w-full overflow-hidden">
-          <div className="absolute inset-0">
-            <Image
-              src="/header.png"
-              alt="Hero background"
-              fill
-              className="object-cover object-center"
-              priority
-            />
-          </div>
+        <section className="relative w-full overflow-hidden">
+          <div className="relative h-[65vh] sm:h-[75vh] lg:h-[88vh] xl:h-[90vh]">
 
-          <div className="relative mx-auto flex h-full max-w-7xl items-center px-4 sm:px-6 lg:px-8">
-            <div className="max-w-2xl space-y-5 pl-0 sm:pl-4 lg:pl-8">
-              <h1 className="text-4xl font-black leading-[1.1] tracking-tight text-[#143255] [text-shadow:0_2px_20px_rgba(255,255,255,0.7)] sm:text-5xl lg:text-6xl">
-                Discover Your <br />
-                <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent [text-shadow:0_2px_20px_rgba(255,255,255,0.5)]">
-                  Beauty
-                </span>{" "}
-                Essentials
-              </h1>
-              <p className="max-w-xl text-lg text-[#143255] [text-shadow:0_2px_20px_rgba(255,255,255,0.7)] sm:text-xl">
-                Premium beauty tools and combos curated for your everyday routine.
-              </p>
-              <div className="flex flex-wrap gap-4 pt-2">
-                <Link
-                  href="#collections"
-                  className="group inline-flex items-center gap-2 rounded-2xl bg-[#2FEBD8] px-8 py-4 text-sm font-bold text-[#143255] shadow-[0_20px_40px_rgba(47,235,216,0.3)] transition hover:-translate-y-1 hover:bg-[#2FEBD8]/80 hover:shadow-[0_30px_60px_rgba(47,235,216,0.4)]"
-                >
-                  Shop Now
-                  <span className="transition-transform group-hover:translate-x-1">→</span>
-                </Link>
-                <Link
-                  href="/collections"
-                  className="group inline-flex items-center gap-2 rounded-2xl bg-[#143255]/80 px-8 py-4 text-sm font-bold text-white backdrop-blur-sm transition hover:-translate-y-1 hover:bg-[#143255]"
-                >
-                  All Combo
-                </Link>
-              </div>
+            <Image
+              src="/header3.png"
+              alt="Duodrop Banner"
+              fill
+              priority
+              className="object-cover object-center"
+            />
+
+            {/* Button Only */}
+            <div
+              className="
+                absolute
+                left-4
+                bottom-6
+                sm:left-8
+                sm:bottom-8
+                md:left-12
+                md:bottom-10
+                lg:left-16
+                lg:bottom-12
+                xl:left-20
+                xl:bottom-14
+              "
+            >
+              <Link
+                href="#collections"
+                className="
+                  inline-flex
+                  items-center
+                  gap-2
+                  rounded-xl
+                  bg-[#FF6B00]
+                  hover:bg-[#E65F00]
+                  px-5
+                  py-3
+                  sm:px-6
+                  sm:py-3
+                  md:px-7
+                  md:py-4
+                  text-sm
+                  sm:text-base
+                  font-bold
+                  text-white
+                  shadow-xl
+                  transition-all
+                  duration-300
+                  hover:scale-105
+                "
+              >
+                <Package size={18} />
+                SHOP COMBO PACKS
+                <ArrowRight size={18} />
+              </Link>
             </div>
+
           </div>
         </section>
 
