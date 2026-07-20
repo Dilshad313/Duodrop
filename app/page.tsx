@@ -1,11 +1,59 @@
 // app/page.tsx
 import Link from "next/link";
 import Image from "next/image";
+import type { Metadata } from 'next';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { GET_ALL_COLLECTIONS } from "@/lib/queries";
 import { isShopifyConfigured, shopifyFetch } from "@/lib/shopify";
 import { Truck, RefreshCw, Lock, Headphones, ArrowRight } from "lucide-react";
+
+// --- Metadata for the page ---
+export const metadata: Metadata = {
+  title: 'Duodrop - Premium Grooming & Beauty Essentials',
+  description: 'Discover premium beauty tools, grooming products, and curated combos at Duodrop. Free shipping on orders above ₹999.',
+  keywords: ['grooming', 'beauty', 'skincare', 'beard', 'shaving', 'premium products', 'combo offers'],
+  authors: [{ name: 'Duodrop' }],
+  creator: 'Duodrop',
+  publisher: 'Duodrop',
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'en_IN',
+    url: 'https://duodrop.in/',
+    siteName: 'Duodrop',
+    title: 'Duodrop - Premium Grooming & Beauty Essentials',
+    description: 'Discover premium beauty tools, grooming products, and curated combos at Duodrop.',
+    images: [
+      {
+        url: '/title.svg',
+        width: 1500,
+        height: 690,
+        alt: 'Duodrop - Premium Grooming & Beauty Essentials',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Duodrop - Premium Grooming & Beauty Essentials',
+    description: 'Discover premium beauty tools, grooming products, and curated combos at Duodrop.',
+    images: ['/logo.png'],
+  },
+  icons: {
+    icon: '/logo.png',
+    apple: '/logo.png',
+  },
+};
 
 type Collection = {
   id: string;
@@ -83,10 +131,10 @@ export default async function HomePage() {
                   <span className="transition-transform group-hover:translate-x-1">→</span>
                 </Link>
                 <Link
-                  href="/products"
+                  href="/collections"
                   className="group inline-flex items-center gap-2 rounded-2xl bg-[#143255]/80 px-8 py-4 text-sm font-bold text-white backdrop-blur-sm transition hover:-translate-y-1 hover:bg-[#143255]"
                 >
-                  All Products
+                  All Combo
                 </Link>
               </div>
             </div>
@@ -103,10 +151,10 @@ export default async function HomePage() {
               <p className="mt-1 text-sm font-medium text-slate-500">Browse our curated collections</p>
             </div>
             <Link
-              href="/products"
+              href="/collections"
               className="inline-flex h-11 items-center justify-center rounded-xl bg-slate-950 px-5 text-sm font-bold text-white transition hover:bg-indigo-600"
             >
-              View All Products
+              View All Combo
             </Link>
           </div>
 
