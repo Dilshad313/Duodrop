@@ -101,59 +101,92 @@ export default async function HomePage() {
         <section className="relative w-full overflow-hidden">
           <div className="relative h-[65vh] sm:h-[75vh] lg:h-[88vh] xl:h-[90vh]">
 
+            {/* Background Image */}
             <Image
-              src="/header3.png"
+              src="/header4.png"
               alt="Duodrop Banner"
               fill
               priority
               className="object-cover object-center"
             />
 
-            {/* Button Only */}
-            <div
-              className="
-                absolute
-                left-4
-                bottom-6
-                sm:left-8
-                sm:bottom-8
-                md:left-12
-                md:bottom-10
-                lg:left-16
-                lg:bottom-12
-                xl:left-20
-                xl:bottom-14
-              "
-            >
-              <Link
-                href="#collections"
-                className="
-                  inline-flex
-                  items-center
-                  gap-2
-                  rounded-xl
-                  bg-[#FF6B00]
-                  hover:bg-[#E65F00]
-                  px-5
-                  py-3
-                  sm:px-6
-                  sm:py-3
-                  md:px-7
-                  md:py-4
-                  text-sm
-                  sm:text-base
-                  font-bold
-                  text-white
-                  shadow-xl
-                  transition-all
-                  duration-300
-                  hover:scale-105
-                "
-              >
-                <Package size={18} />
-                SHOP COMBO PACKS
-                <ArrowRight size={18} />
-              </Link>
+            {/* Overlay Content */}
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
+
+                <div className="max-w-[520px]">
+
+                  {/* Heading */}
+                  <h1
+                    className="
+                      font-extrabold
+                      leading-tight
+                      text-[#0B2B4C]
+                      text-2xl
+                      sm:text-3xl
+                      md:text-4xl
+                      lg:text-5xl
+                      xl:text-6xl
+                    "
+                  >
+                    Why buy separately
+                    <br />
+                    when you get
+                    <br />
+                    <span className="text-[#20C5BE]">
+                      everything in one drop?
+                    </span>
+                  </h1>
+
+                  {/* Description */}
+                  <p
+                    className="
+                      mt-4
+                      text-sm
+                      sm:text-base
+                      md:text-lg
+                      text-[#374151]
+                      max-w-md
+                    "
+                  >
+                    Complete combo packs — everything you need in ONE pack.
+                  </p>
+
+                  {/* Button */}
+                  <Link
+                    href="#collections"
+                    className="
+                      mt-8
+                      inline-flex
+                      items-center
+                      gap-2
+                      rounded-xl
+                      bg-[#FF6B00]
+                      hover:bg-[#E65F00]
+                      px-5
+                      py-3
+                      sm:px-6
+                      sm:py-3
+                      md:px-7
+                      md:py-4
+                      text-sm
+                      sm:text-base
+                      font-bold
+                      text-white
+                      shadow-xl
+                      transition-all
+                      duration-300
+                      hover:scale-105
+                    "
+                  >
+                    <Package size={18} />
+                    SHOP COMBO PACKS
+                    <ArrowRight size={18} />
+                  </Link>
+
+                </div>
+
+              </div>
             </div>
 
           </div>
