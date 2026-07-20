@@ -17,12 +17,9 @@ import {
   Plus, 
   Minus, 
   Check, 
-  Leaf,
-  Truck,
   Shield,
   RotateCcw,
-  Award,
-  Sparkles
+  Package
 } from "lucide-react";
 
 type Variant = {
@@ -77,10 +74,11 @@ function formatINR(amount: number): string {
   });
 }
 
-function ShieldIcon() {
+function CodIcon() {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      <path d="M12 2v4M12 22v-4M4 12H2M22 12h-2M19.07 4.93l-2.83 2.83M4.93 19.07l2.83-2.83M19.07 19.07l-2.83-2.83M4.93 4.93l2.83 2.83"/>
+      <circle cx="12" cy="12" r="3"/>
     </svg>
   );
 }
@@ -251,23 +249,31 @@ export default function CollectionPage({
     setCustomQuantities((prev) => {
       const currentQty = prev[id] || 0;
       const newQty = Math.max(0, currentQty + delta);
-      if (newQty === 0) {
+      
+      // If quantity becomes 1 or more, ensure product is selected
+      if (newQty > 0) {
+        setSelectedVariantIds((sel) => {
+          if (!sel.includes(id)) {
+            return [...sel, id];
+          }
+          return sel;
+        });
+        return { ...prev, [id]: newQty };
+      } else {
+        // If quantity becomes 0, deselect the product
         setSelectedVariantIds((sel) => sel.filter((v) => v !== id));
         const { [id]: _, ...rest } = prev;
         return rest;
       }
-      return { ...prev, [id]: newQty };
     });
   }, []);
 
   const selectedVariants = useMemo(() => allVariants.filter((v) => selectedVariantIds.includes(v.id)), [allVariants, selectedVariantIds]);
 
+  // Custom total - ONLY ACTUAL PRICE (no offer/discount)
   const customTotalMrp = useMemo(() => selectedVariants.reduce(
     (sum, v) => sum + Number(v.price.amount) * (customQuantities[v.id] || 1), 0
   ), [selectedVariants, customQuantities]);
-  const customDiscountPercent = 32;
-  const customYouSave = (customTotalMrp * customDiscountPercent) / 100;
-  const customComboPrice = customTotalMrp - customYouSave;
 
   // Total items count for custom (sum of all quantities)
   const customTotalItems = useMemo(() => {
@@ -401,7 +407,7 @@ export default function CollectionPage({
         </Link>
 
         {/* ============================================ */}
-        {/* AUTO SELECT COMBO - IMPROVED MOBILE CAROUSEL */}
+        {/* AUTO SELECT COMBO */}
         {/* ============================================ */}
         <section className="mb-10">
           {/* Header */}
@@ -411,7 +417,7 @@ export default function CollectionPage({
                 <Zap size={10} />
                 Auto Select Combo
               </div>
-              <h2 className="text-lg sm:text-2xl font-black text-slate-900">Buy 10 Products Combo <span className="text-amber-500">✨</span></h2>
+              <h2 className="text-lg sm:text-2xl font-black text-slate-900">Buy 10 Products Combo <span className="text-amber-500"></span></h2>
               <p className="text-xs text-slate-500 mt-1">Best products handpicked for you automatically</p>
             </div>
             <div className="rounded-lg bg-indigo-600 px-4 py-2 text-white text-center whitespace-nowrap">
@@ -481,7 +487,7 @@ export default function CollectionPage({
                           {variant.displayTitle && (
                             <p className="text-[10px] sm:text-xs text-slate-500 line-clamp-1">{variant.displayTitle}</p>
                           )}
-                          <p className="text-sm sm:text-base font-black text-slate-900 mt-1">₹{formatINR(Number(variant.price.amount))}</p>
+                          {/* PRICE REMOVED FROM AUTO PRODUCT CARDS */}
                         </div>
                       ))}
                     </div>
@@ -512,60 +518,42 @@ export default function CollectionPage({
             <span className="ml-2 text-xs text-slate-400">{autoSlideIndex + 1} / {totalSlides}</span>
           </div>
 
-          {/* Tags */}
-          <div className="flex flex-wrap items-center justify-center gap-2 mt-3">
-            {[
-              { icon: <ShoppingCart size={12} />, text: "10 Premium Items" },
-              { icon: <Zap size={12} />, text: "All Skin Types" },
-              { icon: <ShieldIcon />, text: "Dermatologically Tested" },
-            ].map((tag, i) => (
-              <span key={i} className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 px-3 py-1.5 text-[10px] font-medium text-slate-600">
-                {tag.icon}
-                {tag.text}
-              </span>
-            ))}
-          </div>
-
-          {/* AUTO COMBO BUTTONS WITH MRP AND COMBO PRICE */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mt-5">
-            {/* Add to Cart Button Group */}
-            <div className="flex flex-col items-center gap-1 w-full sm:w-auto">
-              <button
-                onClick={addAutoToCart}
-                disabled={isPending}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg border-2 border-indigo-600 bg-white px-6 py-2.5 text-sm font-bold text-indigo-600 hover:bg-indigo-50 transition disabled:opacity-50"
-              >
-                <ShoppingCart size={16} />
-                {isPending ? "Adding..." : "Add to Cart"}
-              </button>
-              <div className="text-center">
-                <span className="text-xs text-slate-400 line-through mr-2">
-                  ₹{formatINR(autoTotalMrp)}
+          {/* AUTO COMBO - SINGLE PRICE DISPLAY ABOVE BOTH BUTTONS */}
+          <div className="flex flex-col items-center gap-3 mt-5">
+            {/* Single Price Display - Centered */}
+            <div className="text-center bg-indigo-50 px-6 py-2.5 rounded-lg border border-indigo-200 w-full max-w-2xl">
+              <div className="flex items-center justify-center gap-3 flex-wrap">
+                <span className="text-sm text-slate-500 line-through">
+                  MRP: ₹{formatINR(autoTotalMrp)}
                 </span>
-                <span className="text-xs font-bold text-indigo-600">
+                <span className="text-xl font-black text-indigo-600">
                   ₹{formatINR(autoComboPrice)}
+                </span>
+                <span className="text-xs font-bold text-emerald-600 bg-emerald-100 px-2.5 py-0.5 rounded-full">
+                  Save {autoDiscountPercent}%
                 </span>
               </div>
             </div>
 
-            {/* Buy Now Button Group */}
-            <div className="flex flex-col items-center gap-1 w-full sm:w-auto">
+            {/* Buttons Row */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full max-w-2xl">
+              <button
+                onClick={addAutoToCart}
+                disabled={isPending}
+                className="w-full sm:w-1/2 inline-flex items-center justify-center gap-2 rounded-lg border-2 border-indigo-600 bg-white px-6 py-2.5 text-sm font-bold text-indigo-600 hover:bg-indigo-50 transition disabled:opacity-50"
+              >
+                <ShoppingCart size={18} />
+                {isPending ? "Adding..." : "Add to Cart"}
+              </button>
+
               <button
                 onClick={handleAutoBuyNow}
                 disabled={isPending}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-6 py-2.5 text-sm font-bold text-white hover:bg-indigo-700 transition disabled:opacity-50"
+                className="w-full sm:w-1/2 inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-6 py-2.5 text-sm font-bold text-white hover:bg-indigo-700 transition disabled:opacity-50"
               >
-                <Zap size={16} />
+                <Zap size={18} />
                 Buy Now
               </button>
-              <div className="text-center">
-                <span className="text-xs text-slate-400 line-through mr-2">
-                  ₹{formatINR(autoTotalMrp)}
-                </span>
-                <span className="text-xs font-bold text-indigo-600">
-                  ₹{formatINR(autoComboPrice)}
-                </span>
-              </div>
             </div>
           </div>
         </section>
@@ -573,9 +561,9 @@ export default function CollectionPage({
         {/* Divider */}
         <div className="flex items-center gap-3 my-8">
           <div className="flex-1 h-px bg-slate-200"></div>
-          <Leaf size={14} className="text-emerald-500" />
+          <Package size={14} className="text-emerald-500" />
           <span className="text-xs text-slate-400">or customize your own</span>
-          <Leaf size={14} className="text-emerald-500" />
+          <Package size={14} className="text-emerald-500" />
           <div className="flex-1 h-px bg-slate-200"></div>
         </div>
 
@@ -586,10 +574,10 @@ export default function CollectionPage({
           <div className="flex flex-col sm:flex-row items-start justify-between gap-4 mb-4">
             <div className="flex-1">
               <div className="inline-flex items-center gap-1.5 rounded-md bg-emerald-100 px-2.5 py-1 text-[10px] font-bold text-emerald-700 uppercase tracking-wider mb-2">
-                <Leaf size={10} />
+                <Package size={10} />
                 Customize Your Combo
               </div>
-              <h2 className="text-lg sm:text-2xl font-black text-slate-900">Build Your Own Combo <span className="text-emerald-500">🌿</span></h2>
+              <h2 className="text-lg sm:text-2xl font-black text-slate-900">Build Your Own Combo <span className="text-emerald-500"></span></h2>
               <p className="text-xs text-slate-500 mt-1">Choose any products from below</p>
             </div>
             {/* Selection count badge */}
@@ -601,8 +589,8 @@ export default function CollectionPage({
             </div>
           </div>
 
-          {/* Product Grid - Click anywhere to select */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3 mt-4">
+          {/* Product Grid - Click anywhere to select - Adjusted alignment */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3 mt-4 lg:pl-8 lg:pr-0">
             {allVariants.map((variant) => {
               const isSelected = selectedVariantIds.includes(variant.id);
               const qty = customQuantities[variant.id] || 0;
@@ -640,6 +628,7 @@ export default function CollectionPage({
                   {variant.displayTitle && (
                     <p className="text-[9px] sm:text-[10px] text-slate-500 line-clamp-1">{variant.displayTitle}</p>
                   )}
+                  {/* Show actual price only - NO OFFER */}
                   <p className="text-xs sm:text-sm font-black text-slate-900 mt-0.5">₹{formatINR(Number(variant.price.amount))}</p>
 
                   {/* Quantity controls - stop propagation */}
@@ -663,53 +652,52 @@ export default function CollectionPage({
             })}
           </div>
 
-          {/* CUSTOM BUTTONS WITH ONLY MRP */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mt-5 pt-4 border-t border-slate-200">
-            {/* Add to Cart Button Group */}
-            <div className="flex flex-col items-center gap-1 w-full sm:w-auto">
+          {/* CUSTOM - SINGLE PRICE DISPLAY ABOVE BOTH BUTTONS - Only Actual Price, No Offer */}
+          <div className="flex flex-col items-center gap-3 mt-5 pt-4 border-t border-slate-200">
+            {/* Single Price Display - Centered */}
+            {customTotalItems > 0 ? (
+              <div className="text-center bg-emerald-50 px-6 py-2.5 rounded-lg border border-emerald-200 w-full max-w-2xl">
+                <div className="flex items-center justify-center gap-3 flex-wrap">
+                  <span className="text-sm text-slate-600 font-medium">
+                    {customTotalItems} items
+                  </span>
+                  <span className="text-xl font-black text-emerald-600">
+                    Total: ₹{formatINR(customTotalMrp)}
+                  </span>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center bg-slate-50 px-6 py-2.5 rounded-lg border border-slate-200 w-full max-w-2xl">
+                <span className="text-sm text-slate-400 font-medium">
+                  No items selected
+                </span>
+              </div>
+            )}
+
+            {/* Buttons Row */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full max-w-2xl">
               <button
                 onClick={addCustomToCart}
-                disabled={isPending}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg border-2 border-emerald-600 bg-white px-6 py-2.5 text-sm font-bold text-emerald-600 hover:bg-emerald-50 disabled:opacity-50 transition"
+                disabled={isPending || customTotalItems === 0}
+                className="w-full sm:w-1/2 inline-flex items-center justify-center gap-2 rounded-lg border-2 border-emerald-600 bg-white px-6 py-2.5 text-sm font-bold text-emerald-600 hover:bg-emerald-50 disabled:opacity-50 transition"
               >
-                <ShoppingCart size={16} />
+                <ShoppingCart size={18} />
                 {isPending ? "Adding..." : "Add to Cart"}
               </button>
-              {customTotalItems > 0 ? (
-                <span className="text-xs text-slate-500 font-medium">
-                  {customTotalItems} items · ₹{formatINR(customTotalMrp)}
-                </span>
-              ) : (
-                <span className="text-xs text-slate-400 font-medium">
-                  No items selected
-                </span>
-              )}
-            </div>
 
-            {/* Buy Now Button Group */}
-            <div className="flex flex-col items-center gap-1 w-full sm:w-auto">
               <button
                 onClick={handleCustomBuyNow}
-                disabled={isPending}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-emerald-600 px-6 py-2.5 text-sm font-bold text-white hover:bg-emerald-700 disabled:opacity-50 transition"
+                disabled={isPending || customTotalItems === 0}
+                className="w-full sm:w-1/2 inline-flex items-center justify-center gap-2 rounded-lg bg-emerald-600 px-6 py-2.5 text-sm font-bold text-white hover:bg-emerald-700 disabled:opacity-50 transition"
               >
-                <Zap size={16} />
+                <Zap size={18} />
                 Buy Now
               </button>
-              {customTotalItems > 0 ? (
-                <span className="text-xs text-slate-500 font-medium">
-                  {customTotalItems} items · ₹{formatINR(customTotalMrp)}
-                </span>
-              ) : (
-                <span className="text-xs text-slate-400 font-medium">
-                  No items selected
-                </span>
-              )}
             </div>
           </div>
 
           <p className="text-center text-xs text-emerald-600 mt-4 flex items-center justify-center gap-1">
-            <Leaf size={12} /> Select products to create your perfect combo and save more!
+            <Package size={12} /> Select products to create your perfect combo and save more!
           </p>
         </section>
 
@@ -722,24 +710,25 @@ export default function CollectionPage({
           </div>
         )}
 
-        {/* Trust Badges - With Proper Icons */}
-        <section className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
-          {[
-            { icon: <Truck className="h-5 w-5 text-indigo-600" />, title: "Free Shipping", copy: "Above ₹499" },
-            { icon: <Shield className="h-5 w-5 text-indigo-600" />, title: "100% Original", copy: "Products" },
-            { icon: <RotateCcw className="h-5 w-5 text-indigo-600" />, title: "Easy Returns", copy: "Hassle Free" },
-            { icon: <Award className="h-5 w-5 text-indigo-600" />, title: "Best Value", copy: "Save More" },
-          ].map((item) => (
-            <div key={item.title} className="flex items-center gap-2 sm:gap-3 rounded-lg border border-slate-100 bg-white p-2 sm:p-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-50">
-                {item.icon}
+        {/* Trust Badges - Centered with proper alignment */}
+        <section className="flex justify-center items-center mb-8">
+          <div className="grid grid-cols-3 gap-3 max-w-2xl w-full">
+            {[
+              { icon: <Shield className="h-5 w-5 text-indigo-600" />, title: "100% Original", copy: "Products" },
+              { icon: <RotateCcw className="h-5 w-5 text-indigo-600" />, title: "Easy Returns", copy: "Hassle Free" },
+              { icon: <CodIcon />, title: "All India COD", copy: "Available" },
+            ].map((item) => (
+              <div key={item.title} className="flex items-center justify-center gap-2 sm:gap-3 rounded-lg border border-slate-100 bg-white p-2 sm:p-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-50 flex-shrink-0">
+                  {item.icon}
+                </div>
+                <div className="text-left">
+                  <p className="text-xs font-bold text-slate-900">{item.title}</p>
+                  <p className="text-[10px] text-slate-500">{item.copy}</p>
+                </div>
               </div>
-              <div>
-                <p className="text-xs font-bold text-slate-900">{item.title}</p>
-                <p className="text-[10px] text-slate-500">{item.copy}</p>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </section>
       </main>
       <Footer />
