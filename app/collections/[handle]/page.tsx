@@ -8,7 +8,22 @@ import Footer from "@/components/Footer";
 import { GET_COLLECTION_PRODUCTS } from "@/lib/queries";
 import { isShopifyConfigured, shopifyFetch } from "@/lib/shopify";
 import { useCart } from "@/context/CartContext";
-import { ArrowLeft, ShoppingCart, Zap, ChevronLeft, ChevronRight, Plus, Minus, Check, Leaf } from "lucide-react";
+import { 
+  ArrowLeft, 
+  ShoppingCart, 
+  Zap, 
+  ChevronLeft, 
+  ChevronRight, 
+  Plus, 
+  Minus, 
+  Check, 
+  Leaf,
+  Truck,
+  Shield,
+  RotateCcw,
+  Award,
+  Sparkles
+} from "lucide-react";
 
 type Variant = {
   id: string;
@@ -64,7 +79,7 @@ function formatINR(amount: number): string {
 
 function ShieldIcon() {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
     </svg>
   );
@@ -153,6 +168,7 @@ export default function CollectionPage({
         productId: product.id,
         productTitle: product.title,
         productImage: product.images.edges[0]?.node?.url || null,
+        displayTitle: edge.node.title === "Default Title" ? "" : edge.node.title
       }))
     );
   }, [products]);
@@ -258,28 +274,26 @@ export default function CollectionPage({
     return selectedVariants.reduce((sum, v) => sum + (customQuantities[v.id] || 1), 0);
   }, [selectedVariants, customQuantities]);
 
-  
-
-// Add AUTO to cart
-const addAutoToCart = async () => {
-  if (autoVariants.length === 0) { setMessage("No auto products available."); return; }
-  startTransition(async () => {
-    try {
-      for (const variant of autoVariants) {
-        await addToCart({ 
-          variantId: variant.id, 
-          quantity: 1, 
-          title: variant.productTitle,
-          variantTitle: variant.title,
-          price: variant.price.amount,
-          image: variant.productImage || ""
-        });
-      }
-      setMessage(`${autoVariants.length} items added to cart!`);
-      setTimeout(() => { setMessage(null); window.location.href = "/cart"; }, 1500);
-    } catch { setMessage("Failed to add to cart."); }
-  });
-};
+  // Add AUTO to cart
+  const addAutoToCart = async () => {
+    if (autoVariants.length === 0) { setMessage("No auto products available."); return; }
+    startTransition(async () => {
+      try {
+        for (const variant of autoVariants) {
+          await addToCart({ 
+            variantId: variant.id, 
+            quantity: 1, 
+            title: variant.productTitle,
+            variantTitle: variant.displayTitle || "Standard",
+            price: variant.price.amount,
+            image: variant.productImage || ""
+          });
+        }
+        setMessage(`${autoVariants.length} items added to cart!`);
+        setTimeout(() => { setMessage(null); window.location.href = "/cart"; }, 1500);
+      } catch { setMessage("Failed to add to cart."); }
+    });
+  };
 
   // Buy AUTO Now
   const handleAutoBuyNow = async () => {
@@ -296,28 +310,28 @@ const addAutoToCart = async () => {
   };
 
   // Add CUSTOM to cart
-const addCustomToCart = async () => {
-  if (selectedVariants.length === 0) { 
-    setMessage("Please select at least one product."); 
-    return; 
-  }
-  startTransition(async () => {
-    try {
-      for (const variant of selectedVariants) {
-        await addToCart({ 
-          variantId: variant.id, 
-          quantity: customQuantities[variant.id] || 1, 
-          title: variant.productTitle,
-          variantTitle: variant.title,
-          price: variant.price.amount,
-          image: variant.productImage || ""
-        });
-      }
-      setMessage(`${customTotalItems} items added to cart!`);
-      setTimeout(() => { setMessage(null); window.location.href = "/cart"; }, 1500);
-    } catch { setMessage("Failed to add to cart."); }
-  });
-};
+  const addCustomToCart = async () => {
+    if (selectedVariants.length === 0) { 
+      setMessage("Please select at least one product."); 
+      return; 
+    }
+    startTransition(async () => {
+      try {
+        for (const variant of selectedVariants) {
+          await addToCart({ 
+            variantId: variant.id, 
+            quantity: customQuantities[variant.id] || 1, 
+            title: variant.productTitle,
+            variantTitle: variant.displayTitle || "Standard",
+            price: variant.price.amount,
+            image: variant.productImage || ""
+          });
+        }
+        setMessage(`${customTotalItems} items added to cart!`);
+        setTimeout(() => { setMessage(null); window.location.href = "/cart"; }, 1500);
+      } catch { setMessage("Failed to add to cart."); }
+    });
+  };
 
   // Buy CUSTOM Now
   const handleCustomBuyNow = async () => {
@@ -464,7 +478,9 @@ const addCustomToCart = async () => {
                             )}
                           </div>
                           <h3 className="text-xs sm:text-sm font-bold text-slate-900 line-clamp-2">{variant.productTitle}</h3>
-                          <p className="text-[10px] sm:text-xs text-slate-500 line-clamp-1">{variant.title}</p>
+                          {variant.displayTitle && (
+                            <p className="text-[10px] sm:text-xs text-slate-500 line-clamp-1">{variant.displayTitle}</p>
+                          )}
                           <p className="text-sm sm:text-base font-black text-slate-900 mt-1">₹{formatINR(Number(variant.price.amount))}</p>
                         </div>
                       ))}
@@ -510,7 +526,7 @@ const addCustomToCart = async () => {
             ))}
           </div>
 
-          {/* AUTO COMBO BUTTONS WITH PRICE AND COUNT BELOW */}
+          {/* AUTO COMBO BUTTONS WITH MRP AND COMBO PRICE */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mt-5">
             {/* Add to Cart Button Group */}
             <div className="flex flex-col items-center gap-1 w-full sm:w-auto">
@@ -522,9 +538,14 @@ const addCustomToCart = async () => {
                 <ShoppingCart size={16} />
                 {isPending ? "Adding..." : "Add to Cart"}
               </button>
-              <span className="text-xs text-slate-500 font-medium">
-                {autoTotalItems} items · ₹{formatINR(autoComboPrice)}
-              </span>
+              <div className="text-center">
+                <span className="text-xs text-slate-400 line-through mr-2">
+                  ₹{formatINR(autoTotalMrp)}
+                </span>
+                <span className="text-xs font-bold text-indigo-600">
+                  ₹{formatINR(autoComboPrice)}
+                </span>
+              </div>
             </div>
 
             {/* Buy Now Button Group */}
@@ -537,9 +558,14 @@ const addCustomToCart = async () => {
                 <Zap size={16} />
                 Buy Now
               </button>
-              <span className="text-xs text-slate-500 font-medium">
-                {autoTotalItems} items · ₹{formatINR(autoComboPrice)}
-              </span>
+              <div className="text-center">
+                <span className="text-xs text-slate-400 line-through mr-2">
+                  ₹{formatINR(autoTotalMrp)}
+                </span>
+                <span className="text-xs font-bold text-indigo-600">
+                  ₹{formatINR(autoComboPrice)}
+                </span>
+              </div>
             </div>
           </div>
         </section>
@@ -611,7 +637,9 @@ const addCustomToCart = async () => {
                     )}
                   </div>
                   <h3 className="text-[10px] sm:text-xs font-bold text-slate-900 line-clamp-1">{variant.productTitle}</h3>
-                  <p className="text-[9px] sm:text-[10px] text-slate-500 line-clamp-1">{variant.title}</p>
+                  {variant.displayTitle && (
+                    <p className="text-[9px] sm:text-[10px] text-slate-500 line-clamp-1">{variant.displayTitle}</p>
+                  )}
                   <p className="text-xs sm:text-sm font-black text-slate-900 mt-0.5">₹{formatINR(Number(variant.price.amount))}</p>
 
                   {/* Quantity controls - stop propagation */}
@@ -635,7 +663,7 @@ const addCustomToCart = async () => {
             })}
           </div>
 
-          {/* CUSTOM BUTTONS WITH PRICE AND COUNT BELOW */}
+          {/* CUSTOM BUTTONS WITH ONLY MRP */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mt-5 pt-4 border-t border-slate-200">
             {/* Add to Cart Button Group */}
             <div className="flex flex-col items-center gap-1 w-full sm:w-auto">
@@ -649,7 +677,7 @@ const addCustomToCart = async () => {
               </button>
               {customTotalItems > 0 ? (
                 <span className="text-xs text-slate-500 font-medium">
-                  {customTotalItems} items · ₹{formatINR(customComboPrice)}
+                  {customTotalItems} items · ₹{formatINR(customTotalMrp)}
                 </span>
               ) : (
                 <span className="text-xs text-slate-400 font-medium">
@@ -670,7 +698,7 @@ const addCustomToCart = async () => {
               </button>
               {customTotalItems > 0 ? (
                 <span className="text-xs text-slate-500 font-medium">
-                  {customTotalItems} items · ₹{formatINR(customComboPrice)}
+                  {customTotalItems} items · ₹{formatINR(customTotalMrp)}
                 </span>
               ) : (
                 <span className="text-xs text-slate-400 font-medium">
@@ -694,16 +722,18 @@ const addCustomToCart = async () => {
           </div>
         )}
 
-        {/* Trust Badges */}
+        {/* Trust Badges - With Proper Icons */}
         <section className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
           {[
-            { icon: "🚚", title: "Free Shipping", copy: "Above ₹499" },
-            { icon: "✅", title: "100% Original", copy: "Products" },
-            { icon: "🔄", title: "Easy Returns", copy: "Hassle Free" },
-            { icon: "🏆", title: "Best Value", copy: "Save More" },
+            { icon: <Truck className="h-5 w-5 text-indigo-600" />, title: "Free Shipping", copy: "Above ₹499" },
+            { icon: <Shield className="h-5 w-5 text-indigo-600" />, title: "100% Original", copy: "Products" },
+            { icon: <RotateCcw className="h-5 w-5 text-indigo-600" />, title: "Easy Returns", copy: "Hassle Free" },
+            { icon: <Award className="h-5 w-5 text-indigo-600" />, title: "Best Value", copy: "Save More" },
           ].map((item) => (
             <div key={item.title} className="flex items-center gap-2 sm:gap-3 rounded-lg border border-slate-100 bg-white p-2 sm:p-3">
-              <span className="text-lg sm:text-xl">{item.icon}</span>
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-50">
+                {item.icon}
+              </div>
               <div>
                 <p className="text-xs font-bold text-slate-900">{item.title}</p>
                 <p className="text-[10px] text-slate-500">{item.copy}</p>
