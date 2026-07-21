@@ -1,140 +1,94 @@
+// app/contact/page.tsx
 "use client";
 
-import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Mail, Phone, MapPin, Send } from "lucide-react";
+import { Mail, Phone, MapPin, Clock } from "lucide-react";
 
 export default function ContactPage() {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    message: "",
-  });
-  const [submitted, setSubmitted] = useState(false);
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // For demo: just show success message
-    setSubmitted(true);
-    // In production, send to API or email
-  };
-
   return (
     <div className="min-h-screen bg-slate-50">
       <Navbar />
       <main className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="rounded-3xl border border-white/70 bg-white/80 p-8 shadow-lg backdrop-blur-xl sm:p-12">
-          <h1 className="text-4xl font-black text-slate-950">Contact Us</h1>
-          <p className="mt-2 text-sm text-slate-500">
-            We'd love to hear from you. Drop us a message and we'll respond as soon as possible.
-          </p>
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-black text-slate-950">Contact Us</h1>
+            <p className="mt-2 text-sm text-slate-500">
+              We'd love to hear from you. Reach out to us through any of the channels below.
+            </p>
+          </div>
 
-          <div className="mt-8 grid gap-8 md:grid-cols-2">
-            {/* Contact Information */}
-            <div className="space-y-6">
-              <div className="flex items-start gap-4">
-                <Mail className="mt-1 h-5 w-5 text-[#2FEBD8]" />
-                <div>
-                  <p className="text-sm font-semibold text-slate-900">Email</p>
-                  <p className="text-sm text-slate-600">support@duodrop.com</p>
-                </div>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {/* Email */}
+            <div className="flex flex-col items-center rounded-2xl border border-slate-100 bg-white p-6 text-center shadow-sm hover:shadow-md transition-all">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-indigo-50 text-indigo-600">
+                <Mail size={28} />
               </div>
-              <div className="flex items-start gap-4">
-                <Phone className="mt-1 h-5 w-5 text-[#2FEBD8]" />
-                <div>
-                  <p className="text-sm font-semibold text-slate-900">Phone</p>
-                  <p className="text-sm text-slate-600">+91 98765 43210</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-4">
-                <MapPin className="mt-1 h-5 w-5 text-[#2FEBD8]" />
-                <div>
-                  <p className="text-sm font-semibold text-slate-900">Address</p>
-                  <p className="text-sm text-slate-600">
-                    123 Beauty Lane, Mumbai, India
-                  </p>
-                </div>
-              </div>
-              <div className="rounded-2xl bg-[#143255] p-6 text-white">
-                <p className="text-sm font-bold text-[#2FEBD8]">Business Hours</p>
-                <p className="mt-2 text-sm text-white/80">
-                  Monday – Friday: 9:00 AM – 6:00 PM<br />
-                  Saturday: 10:00 AM – 4:00 PM<br />
-                  Sunday: Closed
-                </p>
-              </div>
+              <h3 className="mt-4 text-sm font-semibold text-slate-900">Email</h3>
+              <p className="mt-1 text-sm text-slate-600">
+                <a href="mailto:clickncartmarketplace@gmail.com" className="hover:text-indigo-600 transition">
+                  clickncartmarketplace@gmail.com
+                </a>
+              </p>
+              <p className="text-xs text-slate-400 mt-1">We respond within 24 hours</p>
             </div>
 
-            {/* Contact Form */}
-            <div>
-              {submitted ? (
-                <div className="rounded-2xl bg-emerald-50 p-6 text-center">
-                  <p className="text-lg font-bold text-emerald-700">Thank You!</p>
-                  <p className="mt-2 text-sm text-emerald-600">
-                    Your message has been sent. We'll get back to you shortly.
-                  </p>
-                  <button
-                    onClick={() => setSubmitted(false)}
-                    className="mt-4 rounded-lg bg-emerald-600 px-6 py-2 text-sm font-bold text-white hover:bg-emerald-700"
-                  >
-                    Send Another Message
-                  </button>
-                </div>
-              ) : (
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700">Your Name</label>
-                    <input
-                      type="text"
-                      name="name"
-                      required
-                      value={formData.name}
-                      onChange={handleChange}
-                      className="mt-1 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[#2FEBD8] focus:ring-1 focus:ring-[#2FEBD8]"
-                      placeholder="John Doe"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700">Email Address</label>
-                    <input
-                      type="email"
-                      name="email"
-                      required
-                      value={formData.email}
-                      onChange={handleChange}
-                      className="mt-1 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[#2FEBD8] focus:ring-1 focus:ring-[#2FEBD8]"
-                      placeholder="john@example.com"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700">Message</label>
-                    <textarea
-                      name="message"
-                      required
-                      rows={4}
-                      value={formData.message}
-                      onChange={handleChange}
-                      className="mt-1 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[#2FEBD8] focus:ring-1 focus:ring-[#2FEBD8]"
-                      placeholder="How can we help you?"
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    className="inline-flex items-center gap-2 rounded-2xl bg-[#2FEBD8] px-8 py-3 text-sm font-bold text-[#143255] shadow-md transition hover:bg-[#2FEBD8]/80 hover:shadow-lg"
-                  >
-                    <Send size={18} />
-                    Send Message
-                  </button>
-                </form>
-              )}
+            {/* Phone */}
+            <div className="flex flex-col items-center rounded-2xl border border-slate-100 bg-white p-6 text-center shadow-sm hover:shadow-md transition-all">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+                <Phone size={28} />
+              </div>
+              <h3 className="mt-4 text-sm font-semibold text-slate-900">Phone</h3>
+              <p className="mt-1 text-sm text-slate-600">
+                <a href="tel:+919074059164" className="hover:text-emerald-600 transition">
+                  +91 90 7405 9164
+                </a>
+              </p>
+              <p className="text-xs text-slate-400 mt-1">Mon-Sat, 9:00 AM - 6:00 PM</p>
             </div>
+
+            {/* Address */}
+            <div className="flex flex-col items-center rounded-2xl border border-slate-100 bg-white p-6 text-center shadow-sm hover:shadow-md transition-all md:col-span-2 lg:col-span-1">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-amber-50 text-amber-600">
+                <MapPin size={28} />
+              </div>
+              <h3 className="mt-4 text-sm font-semibold text-slate-900">Address</h3>
+              <address className="mt-1 text-sm text-slate-600 not-italic leading-relaxed">
+                Noorjahan Mannaru Kunnath House<br />
+                Vallapuzha (P.O) Pattambi (Via)<br />
+                Palakkad (Dist) Kerala - 679336<br />
+                India
+              </address>
+            </div>
+          </div>
+
+          {/* Business Hours */}
+          <div className="mt-8 rounded-2xl border border-indigo-100 bg-indigo-50/50 p-6">
+            <div className="flex items-center justify-center gap-3">
+              <Clock size={20} className="text-indigo-600" />
+              <h3 className="text-sm font-bold text-indigo-900">Business Hours</h3>
+            </div>
+            <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-slate-600 max-w-md mx-auto">
+              <div className="flex justify-between">
+                <span className="font-medium">Monday - Friday:</span>
+                <span>9:00 AM – 6:00 PM</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium">Saturday:</span>
+                <span>10:00 AM – 4:00 PM</span>
+              </div>
+              <div className="flex justify-between col-span-full">
+                <span className="font-medium">Sunday:</span>
+                <span>Closed</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Map / Location Note */}
+          <div className="mt-6 text-center">
+            <p className="text-xs text-slate-400">
+              We're located in Palakkad, Kerala. Feel free to reach out to us via email or phone.
+            </p>
           </div>
         </div>
       </main>

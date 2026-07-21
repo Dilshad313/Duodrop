@@ -269,7 +269,7 @@ export default async function HomePage() {
         <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
             {[
-              { icon: Truck, title: "Free Shipping", copy: "On orders above ₹999" },
+              // { icon: Truck, title: "Free Shipping", copy: "On orders above ₹999" },
               { icon: RefreshCw, title: "Easy Returns", copy: "Hassle-free returns" },
               { icon: Lock, title: "Secure Payment", copy: "100% secure payment" },
               { icon: Headphones, title: "24/7 Support", copy: "Dedicated support" },

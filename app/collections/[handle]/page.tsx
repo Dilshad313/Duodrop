@@ -26,6 +26,7 @@ type Variant = {
   id: string;
   title: string;
   price: { amount: string };
+  compareAtPrice?: { amount: string } | null;
   availableForSale?: boolean;
 };
 
@@ -158,22 +159,28 @@ export default function CollectionPage({
     return () => { mounted = false; };
   }, [handle]);
 
-  // Derived values
+  // Derived values - ALL products (no limit)
   const allVariants = useMemo(() => {
     return products.flatMap((product) =>
       product.variants.edges.map((edge) => ({
         ...edge.node,
         productId: product.id,
         productTitle: product.title,
+        productDescription: product.description,
         productImage: product.images.edges[0]?.node?.url || null,
-        displayTitle: edge.node.title === "Default Title" ? "" : edge.node.title
+        displayTitle: edge.node.title === "Default Title" ? "" : edge.node.title,
+        // Offer price = Price field (discounted price)
+        offerPrice: Number(edge.node.price.amount),
+        // Actual price = Compare-at price (original price), fallback to Price if not set
+        actualPrice: edge.node.compareAtPrice?.amount ? Number(edge.node.compareAtPrice.amount) : Number(edge.node.price.amount)
       }))
     );
   }, [products]);
 
-  const autoVariants = useMemo(() => allVariants.slice(0, 10), [allVariants]);
+  // Use ALL variants for auto combo (no limit)
+  const autoVariants = useMemo(() => allVariants, [allVariants]);
 
-  // Responsive items per slide - IMPROVED for mobile
+  // Responsive items per slide
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 480) setItemsPerSlide(1);
@@ -188,11 +195,12 @@ export default function CollectionPage({
 
   const totalSlides = useMemo(() => Math.max(1, Math.ceil(autoVariants.length / itemsPerSlide)), [autoVariants.length, itemsPerSlide]);
 
-  // Auto combo calculations
-  const autoTotalMrp = useMemo(() => autoVariants.reduce((sum, v) => sum + Number(v.price.amount), 0), [autoVariants]);
+  // Auto combo calculations using OFFER prices (Price field) for combo price
+  const autoTotalOfferMrp = useMemo(() => autoVariants.reduce((sum, v) => sum + v.offerPrice, 0), [autoVariants]);
+  const autoTotalActualMrp = useMemo(() => autoVariants.reduce((sum, v) => sum + v.actualPrice, 0), [autoVariants]);
   const autoDiscountPercent = 32;
-  const autoYouSave = (autoTotalMrp * autoDiscountPercent) / 100;
-  const autoComboPrice = autoTotalMrp - autoYouSave;
+  const autoYouSave = (autoTotalOfferMrp * autoDiscountPercent) / 100;
+  const autoComboPrice = autoTotalOfferMrp - autoYouSave;
   const autoTotalItems = autoVariants.length;
 
   // Carousel navigation
@@ -250,7 +258,6 @@ export default function CollectionPage({
       const currentQty = prev[id] || 0;
       const newQty = Math.max(0, currentQty + delta);
       
-      // If quantity becomes 1 or more, ensure product is selected
       if (newQty > 0) {
         setSelectedVariantIds((sel) => {
           if (!sel.includes(id)) {
@@ -260,7 +267,6 @@ export default function CollectionPage({
         });
         return { ...prev, [id]: newQty };
       } else {
-        // If quantity becomes 0, deselect the product
         setSelectedVariantIds((sel) => sel.filter((v) => v !== id));
         const { [id]: _, ...rest } = prev;
         return rest;
@@ -270,12 +276,12 @@ export default function CollectionPage({
 
   const selectedVariants = useMemo(() => allVariants.filter((v) => selectedVariantIds.includes(v.id)), [allVariants, selectedVariantIds]);
 
-  // Custom total - ONLY ACTUAL PRICE (no offer/discount)
+  // Custom total using OFFER prices (Price field)
   const customTotalMrp = useMemo(() => selectedVariants.reduce(
-    (sum, v) => sum + Number(v.price.amount) * (customQuantities[v.id] || 1), 0
+    (sum, v) => sum + v.offerPrice * (customQuantities[v.id] || 1), 0
   ), [selectedVariants, customQuantities]);
 
-  // Total items count for custom (sum of all quantities)
+  // Total items count for custom
   const customTotalItems = useMemo(() => {
     return selectedVariants.reduce((sum, v) => sum + (customQuantities[v.id] || 1), 0);
   }, [selectedVariants, customQuantities]);
@@ -291,7 +297,7 @@ export default function CollectionPage({
             quantity: 1, 
             title: variant.productTitle,
             variantTitle: variant.displayTitle || "Standard",
-            price: variant.price.amount,
+            price: variant.offerPrice.toString(),
             image: variant.productImage || ""
           });
         }
@@ -329,7 +335,7 @@ export default function CollectionPage({
             quantity: customQuantities[variant.id] || 1, 
             title: variant.productTitle,
             variantTitle: variant.displayTitle || "Standard",
-            price: variant.price.amount,
+            price: variant.offerPrice.toString(),
             image: variant.productImage || ""
           });
         }
@@ -407,7 +413,7 @@ export default function CollectionPage({
         </Link>
 
         {/* ============================================ */}
-        {/* AUTO SELECT COMBO */}
+        {/* AUTO SELECT COMBO - ALL PRODUCTS */}
         {/* ============================================ */}
         <section className="mb-10">
           {/* Header */}
@@ -417,8 +423,10 @@ export default function CollectionPage({
                 <Zap size={10} />
                 Auto Select Combo
               </div>
-              <h2 className="text-lg sm:text-2xl font-black text-slate-900">Buy 10 Products Combo <span className="text-amber-500"></span></h2>
-              <p className="text-xs text-slate-500 mt-1">Best products handpicked for you automatically</p>
+              <h2 className="text-lg sm:text-2xl font-black text-slate-900">
+                Buy {collection.title}
+              </h2>
+              <p className="text-xs text-slate-500 mt-1">All {autoTotalItems} products from {collection.title}</p>
             </div>
             <div className="rounded-lg bg-indigo-600 px-4 py-2 text-white text-center whitespace-nowrap">
               <p className="text-[10px] font-bold uppercase tracking-wider text-indigo-200">Best Value</p>
@@ -430,12 +438,12 @@ export default function CollectionPage({
           <div className="text-center my-3">
             <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-700">
               <ShoppingCart size={12} className="text-indigo-600" />
-              10 Items Combo (Automatically Selected)
+              {autoTotalItems} Items - {collection.title} (Automatically Selected)
             </div>
             <p className="text-xs text-slate-500 mt-0.5">No customization. Best products, best savings!</p>
           </div>
 
-          {/* CAROUSEL - WITH DRAG SUPPORT */}
+          {/* CAROUSEL - WITH DRAG SUPPORT - NO INDIVIDUAL PRICES */}
           <div 
             className="relative"
             ref={carouselRef}
@@ -487,7 +495,15 @@ export default function CollectionPage({
                           {variant.displayTitle && (
                             <p className="text-[10px] sm:text-xs text-slate-500 line-clamp-1">{variant.displayTitle}</p>
                           )}
-                          {/* PRICE REMOVED FROM AUTO PRODUCT CARDS */}
+                          {/* Product Description */}
+                          {variant.productDescription && (
+                            <p className="text-[11px] sm:text-xs text-slate-500 line-clamp-2 mt-1.5 leading-snug">
+                              {variant.productDescription.length > 80 
+                                ? variant.productDescription.substring(0, 80) + '...' 
+                                : variant.productDescription}
+                            </p>
+                          )}
+                          {/* NO INDIVIDUAL PRICE DISPLAYED HERE */}
                         </div>
                       ))}
                     </div>
@@ -518,16 +534,18 @@ export default function CollectionPage({
             <span className="ml-2 text-xs text-slate-400">{autoSlideIndex + 1} / {totalSlides}</span>
           </div>
 
-          {/* AUTO COMBO - SINGLE PRICE DISPLAY ABOVE BOTH BUTTONS */}
+          {/* AUTO COMBO - COMBO PRICE DISPLAY WITH MRP */}
           <div className="flex flex-col items-center gap-3 mt-5">
-            {/* Single Price Display - Centered */}
-            <div className="text-center bg-indigo-50 px-6 py-2.5 rounded-lg border border-indigo-200 w-full max-w-2xl">
+            {/* Combo Price Display - Centered */}
+            <div className="text-center bg-indigo-50 px-6 py-3 rounded-lg border border-indigo-200 w-full max-w-2xl">
               <div className="flex items-center justify-center gap-3 flex-wrap">
-                <span className="text-sm text-slate-500 line-through">
-                  MRP: ₹{formatINR(autoTotalMrp)}
+                {/* MRP (sum of compare-at prices) as strike-through */}
+                <span className="text-sm text-slate-400 line-through">
+                  MRP: ₹{formatINR(autoTotalActualMrp)}
                 </span>
+                {/* Combo Offer Price */}
                 <span className="text-xl font-black text-indigo-600">
-                  ₹{formatINR(autoComboPrice)}
+                  Combo Price: ₹{formatINR(autoComboPrice)}
                 </span>
                 <span className="text-xs font-bold text-emerald-600 bg-emerald-100 px-2.5 py-0.5 rounded-full">
                   Save {autoDiscountPercent}%
@@ -568,7 +586,7 @@ export default function CollectionPage({
         </div>
 
         {/* ============================================ */}
-        {/* CUSTOMIZE YOUR COMBO */}
+        {/* CUSTOMIZE YOUR COMBO - ALL PRODUCTS */}
         {/* ============================================ */}
         <section className="mb-8">
           <div className="flex flex-col sm:flex-row items-start justify-between gap-4 mb-4">
@@ -577,8 +595,8 @@ export default function CollectionPage({
                 <Package size={10} />
                 Customize Your Combo
               </div>
-              <h2 className="text-lg sm:text-2xl font-black text-slate-900">Build Your Own Combo <span className="text-emerald-500"></span></h2>
-              <p className="text-xs text-slate-500 mt-1">Choose any products from below</p>
+              <h2 className="text-lg sm:text-2xl font-black text-slate-900">Build Your Own {collection.title}</h2>
+              <p className="text-xs text-slate-500 mt-1">Choose any products from {collection.title}</p>
             </div>
             {/* Selection count badge */}
             <div className="rounded-lg bg-emerald-100 px-3 py-1.5 text-center whitespace-nowrap">
@@ -589,7 +607,7 @@ export default function CollectionPage({
             </div>
           </div>
 
-          {/* Product Grid - Click anywhere to select - Adjusted alignment */}
+          {/* Product Grid - Click anywhere to select - ALL PRODUCTS */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3 mt-4 lg:pl-8 lg:pr-0">
             {allVariants.map((variant) => {
               const isSelected = selectedVariantIds.includes(variant.id);
@@ -628,8 +646,17 @@ export default function CollectionPage({
                   {variant.displayTitle && (
                     <p className="text-[9px] sm:text-[10px] text-slate-500 line-clamp-1">{variant.displayTitle}</p>
                   )}
-                  {/* Show actual price only - NO OFFER */}
-                  <p className="text-xs sm:text-sm font-black text-slate-900 mt-0.5">₹{formatINR(Number(variant.price.amount))}</p>
+                  {/* Show OFFER price with strike-through actual price */}
+                  <div className="mt-0.5">
+                    <span className="text-xs sm:text-sm font-black text-emerald-600">
+                      ₹{formatINR(variant.offerPrice)}
+                    </span>
+                    {variant.actualPrice > variant.offerPrice && (
+                      <span className="text-[9px] sm:text-[10px] text-slate-400 line-through ml-1">
+                        ₹{formatINR(variant.actualPrice)}
+                      </span>
+                    )}
+                  </div>
 
                   {/* Quantity controls - stop propagation */}
                   <div className="flex items-center justify-center gap-1 mt-1.5" onClick={(e) => e.stopPropagation()}>
@@ -652,7 +679,7 @@ export default function CollectionPage({
             })}
           </div>
 
-          {/* CUSTOM - SINGLE PRICE DISPLAY ABOVE BOTH BUTTONS - Only Actual Price, No Offer */}
+          {/* CUSTOM - SINGLE PRICE DISPLAY */}
           <div className="flex flex-col items-center gap-3 mt-5 pt-4 border-t border-slate-200">
             {/* Single Price Display - Centered */}
             {customTotalItems > 0 ? (
@@ -710,21 +737,21 @@ export default function CollectionPage({
           </div>
         )}
 
-        {/* Trust Badges - Centered with proper alignment */}
+        {/* Trust Badges */}
         <section className="flex justify-center items-center mb-8">
-          <div className="grid grid-cols-3 gap-3 max-w-2xl w-full">
+          <div className="grid grid-cols-3 gap-2 sm:gap-3 max-w-2xl w-full">
             {[
-              { icon: <Shield className="h-5 w-5 text-indigo-600" />, title: "100% Original", copy: "Products" },
-              { icon: <RotateCcw className="h-5 w-5 text-indigo-600" />, title: "Easy Returns", copy: "Hassle Free" },
+              { icon: <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-indigo-600" />, title: "100% Original", copy: "Products" },
+              { icon: <RotateCcw className="h-4 w-4 sm:h-5 sm:w-5 text-indigo-600" />, title: "Easy Returns", copy: "Hassle Free" },
               { icon: <CodIcon />, title: "All India COD", copy: "Available" },
             ].map((item) => (
-              <div key={item.title} className="flex items-center justify-center gap-2 sm:gap-3 rounded-lg border border-slate-100 bg-white p-2 sm:p-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-50 flex-shrink-0">
+              <div key={item.title} className="flex items-center justify-center gap-1.5 sm:gap-3 rounded-lg border border-slate-100 bg-white p-1.5 sm:p-3">
+                <div className="flex h-7 w-7 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-indigo-50 flex-shrink-0">
                   {item.icon}
                 </div>
                 <div className="text-left">
-                  <p className="text-xs font-bold text-slate-900">{item.title}</p>
-                  <p className="text-[10px] text-slate-500">{item.copy}</p>
+                  <p className="text-[9px] sm:text-xs font-bold text-slate-900 leading-tight">{item.title}</p>
+                  <p className="text-[8px] sm:text-[10px] text-slate-500 leading-tight">{item.copy}</p>
                 </div>
               </div>
             ))}

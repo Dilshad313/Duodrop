@@ -58,18 +58,13 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/beauty-tools" className="text-white/60 transition hover:text-[#2FEBD8]">
-                  Beauty Tools
+                <Link href="/collections" className="text-white/60 transition hover:text-[#2FEBD8]">
+                  Shop
                 </Link>
               </li>
               <li>
-                <Link href="/beauty-combos" className="text-white/60 transition hover:text-[#2FEBD8]">
-                  Beauty Combos
-                </Link>
-              </li>
-              <li>
-                <Link href="/products" className="text-white/60 transition hover:text-[#2FEBD8]">
-                  All Products
+                <Link href="/contact" className="text-white/60 transition hover:text-[#2FEBD8]">
+                  Contact
                 </Link>
               </li>
             </ul>
@@ -90,13 +85,13 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-white/60 transition hover:text-[#2FEBD8]">
-                  FAQ
+                <Link href="/terms" className="text-white/60 transition hover:text-[#2FEBD8]">
+                  Terms & Conditions
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-white/60 transition hover:text-[#2FEBD8]">
-                  Shipping Info
+                <Link href="/faq" className="text-white/60 transition hover:text-[#2FEBD8]">
+                  FAQ
                 </Link>
               </li>
             </ul>
@@ -108,15 +103,15 @@ export default function Footer() {
             <ul className="mt-4 space-y-3 text-sm">
               <li className="flex items-start gap-3 text-white/60">
                 <MapPin size={18} className="mt-0.5 flex-shrink-0 text-[#2FEBD8]" />
-                <span>123 Beauty Lane, Mumbai, India</span>
+                <span>Noorjahan Mannaru Kunnath House, Vallapuzha (P.O) Pattambi (Via), Palakkad (Dist) Kerala - 679336</span>
               </li>
               <li className="flex items-center gap-3 text-white/60">
                 <Mail size={18} className="flex-shrink-0 text-[#2FEBD8]" />
-                <span>support@duodrop.com</span>
+                <span>clickncartmarketplace@gmail.com</span>
               </li>
               <li className="flex items-center gap-3 text-white/60">
                 <Phone size={18} className="flex-shrink-0 text-[#2FEBD8]" />
-                <span>+91 98765 43210</span>
+                <span>+91 90 7405 9164</span>
               </li>
             </ul>
           </div>
