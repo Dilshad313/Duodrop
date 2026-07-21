@@ -99,89 +99,104 @@ export default async function HomePage() {
 
       <main>
         <section className="relative w-full overflow-hidden">
-          <div className="relative h-[65vh] sm:h-[75vh] lg:h-[88vh] xl:h-[90vh]">
+          <div className="relative h-[60vh] sm:h-[65vh] md:h-[75vh] lg:h-[88vh] xl:h-[90vh]">
 
-            {/* Background Image */}
-            <Image
-              src="/header4.png"
-              alt="Duodrop Banner"
-              fill
-              priority
-              className="object-cover object-center"
-            />
+            {/* Background Image - increased width and height on mobile */}
+            <div className="absolute inset-0 -mt-10 sm:mt-0">
+              <Image
+                src="/header5.png"
+                alt="Duodrop Banner"
+                fill
+                priority
+                className="object-cover object-center scale-95 sm:scale-100"
+              />
+            </div>
 
             {/* Overlay Content */}
-            <div className="absolute inset-0 flex items-center">
+            <div className="absolute inset-0 flex items-center sm:items-center">
               <div className="w-full max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
 
-                <div className="max-w-[520px]">
+                {/* Left alignment */}
+                <div className="ml-0 -ml-4 sm:-ml-8 lg:-ml-12">
 
-                  {/* Heading */}
-                  <h1
-                    className="
-                      font-extrabold
-                      leading-tight
-                      text-[#0B2B4C]
-                      text-2xl
-                      sm:text-3xl
-                      md:text-4xl
-                      lg:text-5xl
-                      xl:text-6xl
-                    "
-                  >
-                    Why buy separately
-                    <br />
-                    when you get
-                    <br />
-                    <span className="text-[#20C5BE]">
-                      everything in one drop?
-                    </span>
-                  </h1>
+                  {/* Heading and description - moved 60px higher on mobile */}
+                  <div className="-mt-[120px] sm:mt-0">
+                    <h1
+                      className="
+                        font-extrabold
+                        leading-tight
+                        text-[#0B2B4C]
+                        text-2xl
+                        sm:text-3xl
+                        md:text-4xl
+                        lg:text-5xl
+                        xl:text-6xl
+                      "
+                    >
+                      Why buy separately
+                      <br />
+                      when you get
+                      <br />
+                      <span className="text-[#20C5BE] text-base sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl">
+                        everything in one drop?
+                      </span>
+                    </h1>
 
-                  {/* Description */}
-                  <p
-                    className="
-                      mt-4
-                      text-sm
-                      sm:text-base
-                      md:text-lg
-                      text-[#374151]
-                      max-w-md
-                    "
-                  >
-                    Complete combo packs — everything you need in ONE pack.
-                  </p>
+                    {/* Description with line break on mobile */}
+                    <p
+                      className="
+                        mt-3
+                        text-sm
+                        sm:text-base
+                        md:text-lg
+                        text-[#374151]
+                        max-w-md
+                      "
+                    >
+                      Complete combo packs
+                      <br className="sm:hidden" />
+                      — everything you need in <span className="text-[#20C5BE] font-semibold">ONE</span> pack.
+                    </p>
+                  </div>
 
-                  {/* Button */}
+                  {/* Button - moved 60px lower on mobile */}
                   <Link
-                    href="#collections"
+                    href="/collections"
                     className="
-                      mt-8
+                      mt-[60px]
+                      sm:mt-6
+                      md:mt-8
                       inline-flex
                       items-center
-                      gap-2
+                      gap-1.5
+                      sm:gap-2
                       rounded-xl
                       bg-[#FF6B00]
                       hover:bg-[#E65F00]
-                      px-5
-                      py-3
-                      sm:px-6
+                      px-3.5
+                      py-2
+                      sm:px-5
                       sm:py-3
-                      md:px-7
-                      md:py-4
-                      text-sm
-                      sm:text-base
+                      md:px-6
+                      md:py-3.5
+                      lg:px-7
+                      lg:py-4
+                      text-xs
+                      sm:text-sm
+                      md:text-base
                       font-bold
                       text-white
                       shadow-xl
                       transition-all
                       duration-300
                       hover:scale-105
+                      relative
+                      z-10
                     "
                   >
-                    <Package size={18} />
-                    SHOP COMBO PACKS
-                    <ArrowRight size={18} />
+                    {/* <Package size={14} className="sm:w-[18px] sm:h-[18px]" /> */}
+                    ALL COMBO
+                    <ArrowRight size={14} className="sm:w-[18px] sm:h-[18px]" />
                   </Link>
 
                 </div>
