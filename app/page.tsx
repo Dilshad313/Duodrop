@@ -6,7 +6,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { GET_ALL_COLLECTIONS } from "@/lib/queries";
 import { isShopifyConfigured, shopifyFetch } from "@/lib/shopify";
-import { Truck, RefreshCw, Lock, Headphones, ArrowRight, Package } from "lucide-react";
+import { Truck, RefreshCw, Lock, Headphones, ArrowRight } from "lucide-react";
 
 // --- Metadata for the page ---
 export const metadata: Metadata = {
@@ -104,7 +104,7 @@ export default async function HomePage() {
             {/* Background Image - increased width and height on mobile */}
             <div className="absolute inset-0 -mt-10 sm:mt-0">
               <Image
-                src="/header5.png"
+                src="/h.png"
                 alt="Duodrop Banner"
                 fill
                 priority
@@ -116,89 +116,9 @@ export default async function HomePage() {
             <div className="absolute inset-0 flex items-center sm:items-center">
               <div className="w-full max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
 
-                {/* Left alignment */}
+                {/* Left alignment - empty, banner only */}
                 <div className="ml-0 -ml-4 sm:-ml-8 lg:-ml-12">
-
-                  {/* Heading and description - moved 60px higher on mobile */}
-                  <div className="-mt-[120px] sm:mt-0">
-                    <h1
-                      className="
-                        font-extrabold
-                        leading-tight
-                        text-[#0B2B4C]
-                        text-2xl
-                        sm:text-3xl
-                        md:text-4xl
-                        lg:text-5xl
-                        xl:text-6xl
-                      "
-                    >
-                      Why buy separately
-                      <br />
-                      when you get
-                      <br />
-                      <span className="text-[#20C5BE] text-base sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl">
-                        everything in one drop?
-                      </span>
-                    </h1>
-
-                    {/* Description with line break on mobile */}
-                    <p
-                      className="
-                        mt-3
-                        text-sm
-                        sm:text-base
-                        md:text-lg
-                        text-[#374151]
-                        max-w-md
-                      "
-                    >
-                      Complete combo packs
-                      <br className="sm:hidden" />
-                      — everything you need in <span className="text-[#20C5BE] font-semibold">ONE</span> pack.
-                    </p>
-                  </div>
-
-                  {/* Button - moved 60px lower on mobile */}
-                  <Link
-                    href="/collections"
-                    className="
-                      mt-[60px]
-                      sm:mt-6
-                      md:mt-8
-                      inline-flex
-                      items-center
-                      gap-1.5
-                      sm:gap-2
-                      rounded-xl
-                      bg-[#FF6B00]
-                      hover:bg-[#E65F00]
-                      px-3.5
-                      py-2
-                      sm:px-5
-                      sm:py-3
-                      md:px-6
-                      md:py-3.5
-                      lg:px-7
-                      lg:py-4
-                      text-xs
-                      sm:text-sm
-                      md:text-base
-                      font-bold
-                      text-white
-                      shadow-xl
-                      transition-all
-                      duration-300
-                      hover:scale-105
-                      relative
-                      z-10
-                    "
-                  >
-                    {/* <Package size={14} className="sm:w-[18px] sm:h-[18px]" /> */}
-                    ALL COMBO
-                    <ArrowRight size={14} className="sm:w-[18px] sm:h-[18px]" />
-                  </Link>
-
+                  {/* Banner image only - no text or button overlay */}
                 </div>
 
               </div>

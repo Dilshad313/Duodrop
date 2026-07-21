@@ -4,7 +4,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useCart } from "@/context/CartContext";
-import { Minus, Plus, Trash2, ShoppingBag, ArrowLeft, Shield, Truck, RotateCcw, CreditCard } from "lucide-react";
+import { Minus, Plus, Trash2, ShoppingBag, ArrowLeft, Shield, RotateCcw, CreditCard } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { useState } from "react";
 
@@ -51,7 +51,7 @@ export default function CartPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50/30">
       <Navbar />
-      
+
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -64,7 +64,7 @@ export default function CartPage() {
               Continue Shopping
             </Link>
           </div>
-          
+
           {cartItems.length > 0 && (
             <button
               onClick={clearCart}
@@ -108,29 +108,32 @@ export default function CartPage() {
             ) : (
               <div className="space-y-4">
                 {cartItems.map((item) => {
-                  const hasImage = item.image && item.image.length > 0;
+                  const imageUrl = item.image && typeof item.image === 'string' && item.image.trim().length > 0
+                    ? item.image.trim()
+                    : null;
                   const hasError = imageErrors[item.variantId];
-                  const showImage = hasImage && !hasError;
-                  
+                  const showImage = imageUrl && !hasError;
+
                   return (
                     <div
                       key={item.variantId}
                       className="group relative rounded-2xl bg-white p-4 shadow-sm hover:shadow-md transition-all duration-200 border border-slate-100/80"
                     >
                       <div className="flex flex-col sm:flex-row gap-4">
-                        {/* Product Image */}
+                        {/* Product Image - Using next/image with unoptimized for external URLs */}
                         <div className="relative h-24 w-24 flex-shrink-0 rounded-xl bg-slate-50 overflow-hidden border border-slate-100">
                           {showImage ? (
                             <Image
-                              src={item.image as string}
+                              src={imageUrl}
                               alt={item.title || "Product"}
                               fill
                               className="object-contain p-2"
                               onError={() => handleImageError(item.variantId)}
                               unoptimized
+                              sizes="96px"
                             />
                           ) : (
-                            <div className="flex h-full items-center justify-center">
+                            <div className="flex h-full w-full items-center justify-center">
                               <ShoppingBag className="h-8 w-8 text-slate-300" />
                             </div>
                           )}
@@ -146,7 +149,7 @@ export default function CartPage() {
                               {item.variantTitle}
                             </p>
                           )}
-                          
+
                           {/* Price and Quantity */}
                           <div className="flex flex-wrap items-center gap-3 mt-2">
                             <div className="flex items-center rounded-lg border border-slate-200 bg-white">
@@ -164,7 +167,7 @@ export default function CartPage() {
                                 <Plus size={14} />
                               </button>
                             </div>
-                            
+
                             <div className="flex items-center gap-2">
                               <span className="font-bold text-slate-950">
                                 ₹{(Number(item.price || 0) * item.quantity).toLocaleString("en-IN")}
@@ -198,23 +201,23 @@ export default function CartPage() {
             <div className="lg:col-span-1">
               <div className="sticky top-24 rounded-2xl bg-white p-6 shadow-sm border border-slate-100/80">
                 <h2 className="text-xl font-black text-slate-950">Order Summary</h2>
-                
+
                 <div className="mt-6 space-y-3 border-t border-slate-200 pt-6">
                   <div className="flex justify-between text-sm">
                     <span className="text-slate-600">Subtotal</span>
                     <span className="font-medium">₹{subtotal.toLocaleString("en-IN")}</span>
                   </div>
-                  
+
                   <div className="flex justify-between text-sm">
                     <span className="text-slate-600">Discount (32%)</span>
                     <span className="font-medium text-emerald-600">-₹{savings.toLocaleString("en-IN")}</span>
                   </div>
-                  
+
                   <div className="flex justify-between text-sm">
                     <span className="text-slate-600">Shipping</span>
                     <span className="font-medium text-emerald-600">Free</span>
                   </div>
-                  
+
                   <div className="flex justify-between border-t border-slate-200 pt-4 text-lg font-black">
                     <span className="text-slate-950">Total</span>
                     <span className="text-indigo-600">₹{total.toLocaleString("en-IN")}</span>
@@ -230,11 +233,7 @@ export default function CartPage() {
                 </button>
 
                 {/* Trust Badges */}
-                <div className="mt-6 grid grid-cols-3 gap-2 border-t border-slate-200 pt-6">
-                  <div className="text-center">
-                    <Truck className="mx-auto h-5 w-5 text-indigo-400" />
-                    <p className="mt-1 text-[10px] font-medium text-slate-500">Free Shipping</p>
-                  </div>
+                <div className="mt-6 grid grid-cols-2 gap-2 border-t border-slate-200 pt-6">
                   <div className="text-center">
                     <Shield className="mx-auto h-5 w-5 text-indigo-400" />
                     <p className="mt-1 text-[10px] font-medium text-slate-500">Secure Payment</p>
