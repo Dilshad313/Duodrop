@@ -100,11 +100,10 @@ export default async function HomePage() {
       <main>
         <section className="relative w-full overflow-hidden">
           <div className="relative h-[60vh] sm:h-[65vh] md:h-[75vh] lg:h-[88vh] xl:h-[90vh]">
-
-            {/* Background Image - increased width and height on mobile */}
+            {/* Background Image */}
             <div className="absolute inset-0 -mt-10 sm:mt-0">
               <Image
-                src="/h.png"
+                src="/h1.png"
                 alt="Duodrop Banner"
                 fill
                 priority
@@ -112,18 +111,29 @@ export default async function HomePage() {
               />
             </div>
 
-            {/* Overlay Content */}
-            <div className="absolute inset-0 flex items-center sm:items-center">
-              <div className="w-full max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
-
-                {/* Left alignment - empty, banner only */}
-                <div className="ml-0 -ml-4 sm:-ml-8 lg:-ml-12">
-                  {/* Banner image only - no text or button overlay */}
-                </div>
-
-              </div>
-            </div>
-
+            {/* Shop Combos Button - Centered & Wider */}
+            <Link
+              href="/collections"
+              className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center gap-2 rounded-xl font-bold text-white transition-all duration-300 hover:scale-105 hover:shadow-lg
+                /* Mobile */
+                top-[85%] w-[45%] h-[9%] text-sm
+                /* Desktop */
+                sm:top-[88%] sm:w-[22%] sm:h-[8%] sm:text-base"
+              style={{
+                background: 'linear-gradient(135deg, #5B2E91 0%, #4A1F7A 100%)',
+              }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="9" cy="21" r="1"/>
+                <circle cx="20" cy="21" r="1"/>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+              </svg>
+              Shop Combos
+              <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14"/>
+                <path d="m12 5 7 7-7 7"/>
+              </svg>
+            </Link>
           </div>
         </section>
 
