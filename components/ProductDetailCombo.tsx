@@ -76,7 +76,7 @@ export default function ProductDetailCombo({ product }: { product: Product }) {
     0
   );
   const comboPrice = selectedVariants.reduce(
-    (sum, v) => sum + getOfferPrice(v) * (customQuantities[v.id] || 1),
+    (sum, v) => sum + getActualPrice(v) * (customQuantities[v.id] || 1),
     0
   );
   const youSave = Math.max(0, totalMrp - comboPrice);
@@ -152,7 +152,7 @@ export default function ProductDetailCombo({ product }: { product: Product }) {
             variantId: variant.id,
             quantity: customQuantities[variant.id] || 1,
             title: variant.title,
-            price: variant.price.amount,
+            price: getActualPrice(variant).toString(),
           });
         }
         setMessage(`${selectedVariants.length} custom items added to cart.`);

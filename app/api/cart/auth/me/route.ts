@@ -4,7 +4,7 @@ import { getCustomer, getCustomerToken } from '@/lib/auth-utils.server';
 
 export async function GET() {
   try {
-    const token = getCustomerToken();
+    const token = await getCustomerToken();
     if (!token) {
       return NextResponse.json(
         { error: 'Not authenticated' },

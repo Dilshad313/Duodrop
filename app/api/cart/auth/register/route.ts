@@ -80,8 +80,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Set cookies
-    setAuthCookies(
+    // Set cookies (must be awaited in Next.js 15+)
+    await setAuthCookies(
       customerAccessToken.accessToken,
       customerAccessToken.expiresAt,
       customer.id

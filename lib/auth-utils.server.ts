@@ -8,26 +8,26 @@ export const CUSTOMER_EXPIRY_COOKIE = 'customer_expiry';
 export const CUSTOMER_ID_COOKIE = 'customer_id';
 
 // Get customer token from cookies (Server)
-export function getCustomerToken() {
-  const cookieStore = cookies();
+export async function getCustomerToken() {
+  const cookieStore = await cookies();
   return cookieStore.get(CUSTOMER_TOKEN_COOKIE)?.value;
 }
 
 // Get customer ID from cookies (Server)
-export function getCustomerId() {
-  const cookieStore = cookies();
+export async function getCustomerId() {
+  const cookieStore = await cookies();
   return cookieStore.get(CUSTOMER_ID_COOKIE)?.value;
 }
 
 // Get customer expiry from cookies (Server)
-export function getCustomerExpiry() {
-  const cookieStore = cookies();
+export async function getCustomerExpiry() {
+  const cookieStore = await cookies();
   return cookieStore.get(CUSTOMER_EXPIRY_COOKIE)?.value;
 }
 
 // Get logged in customer details (Server)
 export async function getCustomer(customerToken?: string) {
-  const token = customerToken || getCustomerToken();
+  const token = customerToken || await getCustomerToken();
   if (!token) return null;
 
   try {
@@ -44,8 +44,8 @@ export async function getCustomer(customerToken?: string) {
 }
 
 // Set auth cookies (Server)
-export function setAuthCookies(accessToken: string, expiresAt: string, customerId: string) {
-  const cookieStore = cookies();
+export async function setAuthCookies(accessToken: string, expiresAt: string, customerId: string) {
+  const cookieStore = await cookies();
   
   cookieStore.set(CUSTOMER_TOKEN_COOKIE, accessToken, {
     httpOnly: true,
@@ -73,14 +73,14 @@ export function setAuthCookies(accessToken: string, expiresAt: string, customerI
 }
 
 // Clear auth cookies (Server)
-export function clearAuthCookies() {
-  const cookieStore = cookies();
+export async function clearAuthCookies() {
+  const cookieStore = await cookies();
   cookieStore.delete(CUSTOMER_TOKEN_COOKIE);
   cookieStore.delete(CUSTOMER_EXPIRY_COOKIE);
   cookieStore.delete(CUSTOMER_ID_COOKIE);
 }
 
 // Check if authenticated (Server)
-export function isAuthenticated() {
-  return !!getCustomerToken();
+export async function isAuthenticated() {
+  return !!(await getCustomerToken());
 }

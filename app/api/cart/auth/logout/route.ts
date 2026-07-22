@@ -6,7 +6,7 @@ import { CUSTOMER_ACCESS_TOKEN_DELETE } from '@/lib/auth';
 
 export async function POST() {
   try {
-    const token = getCustomerToken();
+    const token = await getCustomerToken();
 
     // Delete token from Shopify (optional but good practice)
     if (token) {
@@ -26,14 +26,14 @@ export async function POST() {
       }
     }
 
-    // Clear cookies
-    clearAuthCookies();
+    // Clear cookies (must be awaited in Next.js 15+)
+    await clearAuthCookies();
 
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Logout error:', error);
     // Still clear cookies even if API fails
-    clearAuthCookies();
+    await clearAuthCookies();
     return NextResponse.json({ success: true });
   }
 }

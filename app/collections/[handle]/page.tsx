@@ -281,9 +281,9 @@ export default function CollectionPage({
 
   const selectedVariants = useMemo(() => allVariants.filter((v) => selectedVariantIds.includes(v.id)), [allVariants, selectedVariantIds]);
 
-  // Custom total using OFFER prices (Price field)
+  // Custom total using ACTUAL prices (Compare-at price field)
   const customTotalMrp = useMemo(() => selectedVariants.reduce(
-    (sum, v) => sum + v.offerPrice * (customQuantities[v.id] || 1), 0
+    (sum, v) => sum + v.actualPrice * (customQuantities[v.id] || 1), 0
   ), [selectedVariants, customQuantities]);
 
   // Total items count for custom
@@ -340,7 +340,7 @@ export default function CollectionPage({
             quantity: customQuantities[variant.id] || 1, 
             title: variant.productTitle,
             variantTitle: variant.displayTitle || "Standard",
-            price: variant.offerPrice.toString(),
+            price: variant.actualPrice.toString(),
             image: variant.productImage || ""
           });
         }

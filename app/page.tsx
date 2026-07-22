@@ -99,14 +99,25 @@ export default async function HomePage() {
 
       <main>
         <section className="relative w-full overflow-hidden">
-          {/* Responsive height for all devices: mobile → Nest Hub → desktop */}
-          <div className="relative w-full h-[50vh] sm:h-[55vh] md:h-[65vh] lg:h-[75vh] xl:h-[85vh] 2xl:h-[90vh]">
+          <div className="relative w-full h-[90vh] sm:h-[80vh] md:h-[85vh] lg:h-[90vh] xl:h-[92vh] 2xl:h-[95vh]">
             
-            {/* Background Image - maintains aspect ratio on all screens */}
-            <div className="absolute inset-0">
+            {/* Desktop/Tablet Background Image - hidden on mobile */}
+            <div className="absolute inset-0 hidden sm:block bg-slate-100 mb-22">
               <Image
                 src="/h1.png"
                 alt="Duodrop Banner"
+                fill
+                priority
+                sizes="100vw"
+                className="object-contain object-center"
+              />
+            </div>
+
+            {/* Mobile Background Image - only visible on mobile */}
+            <div className="absolute inset-0 block sm:hidden bg-slate-100">
+              <Image
+                src="/h3.png"
+                alt="Duodrop Mobile Banner"
                 fill
                 priority
                 sizes="100vw"
@@ -114,26 +125,28 @@ export default async function HomePage() {
               />
             </div>
 
-            {/* Shop Combos Button - Centered, responsive on ALL devices */}
+            {/* Shop Combos Button - positioned higher on both mobile and desktop */}
             <Link
               href="/collections"
-              className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center gap-1.5 sm:gap-2 rounded-lg sm:rounded-xl font-bold text-white transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95"
+              className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center gap-2 sm:gap-3 rounded-xl sm:rounded-2xl font-bold text-white transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 top-[calc(82%-50px)] lg:top-[calc(87%-100px)]"
               style={{
-                top: '84%',
-                width: 'min(42%, 280px)',
-                height: '9%',
+                width: 'min(58%, 260px)',
+                height: '11%',
+                minHeight: '52px',
                 background: 'linear-gradient(135deg, #5B2E91 0%, #4A1F7A 100%)',
-                fontSize: 'clamp(11px, 2.2vw, 18px)',
+                fontSize: 'clamp(15px, 2.8vw, 24px)',
                 whiteSpace: 'nowrap',
+                padding: '0 24px',
+                boxShadow: '0 10px 40px rgba(91, 46, 145, 0.4)',
               }}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="1.1em" height="1.1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="9" cy="21" r="1"/>
                 <circle cx="20" cy="21" r="1"/>
                 <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
               </svg>
               <span>Shop Combos</span>
-              <svg xmlns="http://www.w3.org/2000/svg" width="1.1em" height="1.1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12h14"/>
                 <path d="m12 5 7 7-7 7"/>
               </svg>

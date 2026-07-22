@@ -1,7 +1,7 @@
 // middleware.ts
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { CUSTOMER_TOKEN_COOKIE } from './lib/auth-utils.server';
+import { CUSTOMER_TOKEN_COOKIE } from '../lib/auth-utils.server';
 
 // Protected routes
 const protectedRoutes = ['/account'];
