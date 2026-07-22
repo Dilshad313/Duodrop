@@ -36,6 +36,9 @@ export const GET_ALL_PRODUCTS = `query GetAllProducts($first: Int!) {
               price {
                 amount
               }
+              compareAtPrice {
+                amount
+              }
             }
           }
         }
@@ -78,6 +81,9 @@ export const GET_PRODUCT_BY_ID = `query GetProduct($id: ID!) {
           price {
             amount
           }
+          compareAtPrice {
+            amount
+          }
         }
       }
     }
@@ -118,6 +124,9 @@ export const SEARCH_PRODUCTS = `query SearchProducts($query: String!, $first: In
               availableForSale
               quantityAvailable
               price {
+                amount
+              }
+              compareAtPrice {
                 amount
               }
             }
@@ -172,6 +181,9 @@ export const GET_COLLECTION_PRODUCTS = `query GetCollectionProducts($handle: Str
                 availableForSale
                 quantityAvailable
                 price {
+                  amount
+                }
+                compareAtPrice {
                   amount
                 }
               }

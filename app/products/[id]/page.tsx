@@ -31,6 +31,9 @@ export default async function ProductDetailPage({
     );
   }
 
+  let product: ProductNode | null = null;
+  let loadError = false;
+
   try {
     const resolvedParams = await params;
     const decodedId = decodeURIComponent(resolvedParams.id);
@@ -40,40 +43,13 @@ export default async function ProductDetailPage({
       variables: { id: decodedId },
     });
 
-    const product = data.product;
-    if (!product) notFound();
-
-    const normalizedProduct = {
-      id: product.id,
-      title: product.title,
-      description: product.description,
-      images: product.images.edges.map((edge) => edge.node),
-      variants: product.variants.edges.map((edge) => ({
-        id: edge.node.id,
-        title: edge.node.title,
-        price: { amount: edge.node.price.amount },
-        availableForSale: edge.node.availableForSale ?? true, // Fallback to true if undefined
-      })),
-    };
-
-    return (
-      <div className="min-h-screen bg-slate-50">
-        <Navbar />
-        <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
-          <div className="mb-6 flex flex-wrap items-center gap-2 text-sm font-medium text-slate-500">
-            <Link href="/" className="hover:text-slate-950">Home</Link>
-            <span>/</span>
-            <Link href="/products" className="hover:text-slate-950">Products</Link>
-            <span>/</span>
-            <span className="text-slate-900">{product.title}</span>
-          </div>
-          <ProductDetailCombo product={normalizedProduct} />
-        </main>
-        <Footer />
-      </div>
-    );
+    product = data.product;
   } catch (error) {
     console.error("Error loading product:", error);
+    loadError = true;
+  }
+
+  if (loadError) {
     return (
       <div className="min-h-screen bg-slate-50">
         <Navbar />
@@ -87,4 +63,37 @@ export default async function ProductDetailPage({
       </div>
     );
   }
+
+  if (!product) notFound();
+
+  const normalizedProduct = {
+    id: product.id,
+    title: product.title,
+    description: product.description,
+    images: product.images.edges.map((edge) => edge.node),
+    variants: product.variants.edges.map((edge) => ({
+      id: edge.node.id,
+      title: edge.node.title,
+      price: { amount: edge.node.price.amount },
+      compareAtPrice: edge.node.compareAtPrice ?? null,
+      availableForSale: edge.node.availableForSale ?? true, // Fallback to true if undefined
+    })),
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-50">
+      <Navbar />
+      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
+        <div className="mb-6 flex flex-wrap items-center gap-2 text-sm font-medium text-slate-500">
+          <Link href="/" className="hover:text-slate-950">Home</Link>
+          <span>/</span>
+          <Link href="/products" className="hover:text-slate-950">Products</Link>
+          <span>/</span>
+          <span className="text-slate-900">{product.title}</span>
+        </div>
+        <ProductDetailCombo product={normalizedProduct} />
+      </main>
+      <Footer />
+    </div>
+  );
 }

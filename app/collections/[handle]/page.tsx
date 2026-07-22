@@ -1,4 +1,4 @@
-// app/collections/[handle]/page.tsx
+﻿// app/collections/[handle]/page.tsx
 "use client";
 
 import Link from "next/link";
@@ -201,12 +201,11 @@ export default function CollectionPage({
 
   const totalSlides = useMemo(() => Math.max(1, Math.ceil(autoVariants.length / itemsPerSlide)), [autoVariants.length, itemsPerSlide]);
 
-  // Auto combo calculations using OFFER prices (Price field) for combo price
-  const autoTotalOfferMrp = useMemo(() => autoVariants.reduce((sum, v) => sum + v.offerPrice, 0), [autoVariants]);
+  // Auto combo price is the exact sum of Shopify Price fields.
+  const autoComboPrice = useMemo(() => autoVariants.reduce((sum, v) => sum + v.offerPrice, 0), [autoVariants]);
   const autoTotalActualMrp = useMemo(() => autoVariants.reduce((sum, v) => sum + v.actualPrice, 0), [autoVariants]);
-  const autoDiscountPercent = 32;
-  const autoYouSave = (autoTotalOfferMrp * autoDiscountPercent) / 100;
-  const autoComboPrice = autoTotalOfferMrp - autoYouSave;
+  const autoYouSave = Math.max(0, autoTotalActualMrp - autoComboPrice);
+  const autoDiscountPercent = autoTotalActualMrp > 0 ? Math.round((autoYouSave / autoTotalActualMrp) * 100) : 0;
   const autoTotalItems = autoVariants.length;
 
   // Carousel navigation
@@ -618,7 +617,6 @@ export default function CollectionPage({
             {customVariants.map((variant) => {
               const isSelected = selectedVariantIds.includes(variant.id);
               const qty = customQuantities[variant.id] || 0;
-              const hasCompareAtPrice = variant.actualPrice > variant.offerPrice;
               return (
                 <div
                   key={variant.id}
@@ -653,16 +651,11 @@ export default function CollectionPage({
                   {variant.displayTitle && (
                     <p className="text-[9px] sm:text-[10px] text-slate-500 line-clamp-1">{variant.displayTitle}</p>
                   )}
-                  {/* Show COMPARE-AT price (actual price) with strike-through + OFFER price */}
+                  {/* Show Shopify Compare-at price as the custom individual price. */}
                   <div className="mt-0.5 flex items-center gap-1 flex-wrap">
                     <span className="text-xs sm:text-sm font-black text-emerald-600">
-                      ₹{formatINR(variant.offerPrice)}
+                      ₹{formatINR(variant.actualPrice)}
                     </span>
-                    {hasCompareAtPrice && (
-                      <span className="text-[9px] sm:text-[10px] text-slate-400 line-through">
-                        ₹{formatINR(variant.actualPrice)}
-                      </span>
-                    )}
                   </div>
 
                   {/* Quantity controls - stop propagation */}

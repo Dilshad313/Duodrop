@@ -19,6 +19,7 @@ export type ProductNode = {
         id: string; 
         title: string; 
         price: { amount: string };
+        compareAtPrice?: { amount: string } | null;
         availableForSale?: boolean;
         quantityAvailable?: number;
       };

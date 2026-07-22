@@ -9,25 +9,33 @@ export function isShopifyConfigured() {
 export async function shopifyFetch<T>({
   query,
   variables = {},
+  customerToken,
 }: {
   query: string;
   variables?: Record<string, unknown>;
+  customerToken?: string;
 }): Promise<T> {
   if (!domain || !token) {
     throw new Error("Missing Shopify environment variables");
   }
 
-  // Trim whitespace to avoid parser errors
   const trimmedQuery = query.trim();
 
-  const response = await fetch(`https://${domain}/api/2024-01/graphql.json`, {
+  const headers: HeadersInit = {
+    "Content-Type": "application/json",
+    ...(token.startsWith("shpat_")
+      ? { "Shopify-Storefront-Private-Token": token }
+      : { "X-Shopify-Storefront-Access-Token": token }),
+  };
+
+  // Add customer token for authenticated requests
+  if (customerToken) {
+    headers["Authorization"] = `Bearer ${customerToken}`;
+  }
+
+  const response = await fetch(`https://${domain}/api/2024-07/graphql.json`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      ...(token.startsWith("shpat_")
-        ? { "Shopify-Storefront-Private-Token": token }
-        : { "X-Shopify-Storefront-Access-Token": token }),
-    },
+    headers,
     body: JSON.stringify({ query: trimmedQuery, variables }),
     next: { revalidate: 60 },
   });

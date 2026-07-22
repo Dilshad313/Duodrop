@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useTransition } from "react";
 import { useCart } from "@/context/CartContext";
@@ -8,6 +8,7 @@ type Variant = {
   id: string;
   title: string;
   price: { amount: string };
+  compareAtPrice?: { amount: string } | null;
   availableForSale?: boolean;
   image?: { url: string; altText?: string };
 };
@@ -26,6 +27,14 @@ function formatINR(amount: number): string {
     maximumFractionDigits: 0,
     minimumFractionDigits: 0,
   });
+}
+
+function getOfferPrice(variant: Variant): number {
+  return Number(variant.price.amount) || 0;
+}
+
+function getActualPrice(variant: Variant): number {
+  return Number(variant.compareAtPrice?.amount || variant.price.amount) || 0;
 }
 
 export default function ProductDetailCombo({ product }: { product: Product }) {
@@ -66,12 +75,20 @@ export default function ProductDetailCombo({ product }: { product: Product }) {
   // Calculate totals
   const selectedVariants = product.variants.filter((v) => selectedVariantIds.includes(v.id));
   const totalMrp = selectedVariants.reduce(
-    (sum, v) => sum + Number(v.price.amount) * (customQuantities[v.id] || 1),
+    (sum, v) => sum + getActualPrice(v) * (customQuantities[v.id] || 1),
     0
   );
-  const discountPercent = 32; // fixed discount as per reference
-  const youSave = (totalMrp * discountPercent) / 100;
-  const comboPrice = totalMrp - youSave;
+  const comboPrice = selectedVariants.reduce(
+    (sum, v) => sum + getOfferPrice(v) * (customQuantities[v.id] || 1),
+    0
+  );
+  const youSave = Math.max(0, totalMrp - comboPrice);
+  const discountPercent = totalMrp > 0 ? Math.round((youSave / totalMrp) * 100) : 0;
+  const autoTotalMrp = autoVariants.reduce((sum, v) => sum + getActualPrice(v), 0);
+  // Auto combo price is the exact sum of Shopify Price fields.
+  const autoComboPrice = autoVariants.reduce((sum, v) => sum + getOfferPrice(v), 0);
+  const autoYouSave = Math.max(0, autoTotalMrp - autoComboPrice);
+  const autoDiscountPercent = autoTotalMrp > 0 ? Math.round((autoYouSave / autoTotalMrp) * 100) : 0;
 
   // Add selected to cart
   const addCustomToCart = async () => {
@@ -96,7 +113,7 @@ export default function ProductDetailCombo({ product }: { product: Product }) {
     });
   };
 
-  // Buy Now – directly redirect to checkout
+  // Buy Now â€“ directly redirect to checkout
   const handleBuyNow = async () => {
     if (selectedVariants.length === 0) {
       setMessage("Please select at least one product.");
@@ -124,9 +141,6 @@ export default function ProductDetailCombo({ product }: { product: Product }) {
       }
     });
   };
-
-  // Determine if a variant is in auto list
-  const autoIds = new Set(autoVariants.map((v) => v.id));
 
   return (
     <div className="space-y-10">
@@ -176,6 +190,22 @@ export default function ProductDetailCombo({ product }: { product: Product }) {
             ))}
           </div>
         </div>
+
+        <div className="mt-4 rounded-2xl border border-indigo-200 bg-indigo-50 px-5 py-3">
+          <div className="flex flex-wrap items-center justify-center gap-3 text-center">
+            <span className="text-sm font-semibold text-slate-500 line-through">
+              MRP: ₹{formatINR(autoTotalMrp)}
+            </span>
+            <span className="text-xl font-black text-indigo-600">
+              Combo Price: ₹{formatINR(autoComboPrice)}
+            </span>
+            {autoYouSave > 0 && (
+              <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-bold text-emerald-700">
+                Save {autoDiscountPercent}%
+              </span>
+            )}
+          </div>
+        </div>
       </section>
 
       {/* CUSTOMIZE YOUR COMBO */}
@@ -213,7 +243,7 @@ export default function ProductDetailCombo({ product }: { product: Product }) {
                 <p className="text-xs text-slate-500">Size: {variant.title}</p>
                 <div className="mt-1 flex items-center justify-between">
                   <span className="text-lg font-black text-slate-950">
-                    ₹{formatINR(Number(variant.price.amount))}
+                    ₹{formatINR(getActualPrice(variant))}
                   </span>
                   <input
                     type="checkbox"
@@ -234,7 +264,7 @@ export default function ProductDetailCombo({ product }: { product: Product }) {
                       }}
                       className="grid h-6 w-6 place-items-center rounded-full border border-slate-200 bg-white text-xs"
                     >
-                      –
+                      â€“
                     </button>
                     <span className="w-6 text-center text-sm font-bold">
                       {customQuantities[variant.id] || 1}
