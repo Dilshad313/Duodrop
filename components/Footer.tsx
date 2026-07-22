@@ -18,28 +18,21 @@ export default function Footer() {
             </p>
             <div className="flex gap-3">
               <a
-                href="#"
+                href="https://www.facebook.com/share/1961K1vLMV/"
                 className="rounded-full bg-white/10 p-2 text-[#2FEBD8] transition hover:bg-white/20 hover:text-white"
                 aria-label="Facebook"
               >
                 <FaFacebook size={18} />
               </a>
               <a
-                href="#"
+                href="https://www.instagram.com/duodrop.in?igsh=aGV5b3ZvbjJuYW9v"
                 className="rounded-full bg-white/10 p-2 text-[#2FEBD8] transition hover:bg-white/20 hover:text-white"
                 aria-label="Instagram"
               >
                 <FaInstagram size={18} />
               </a>
               <a
-                href="#"
-                className="rounded-full bg-white/10 p-2 text-[#2FEBD8] transition hover:bg-white/20 hover:text-white"
-                aria-label="Twitter"
-              >
-                <FaTwitter size={18} />
-              </a>
-              <a
-                href="#"
+                href=" https://www.youtube.com/@duo-drop-in"
                 className="rounded-full bg-white/10 p-2 text-[#2FEBD8] transition hover:bg-white/20 hover:text-white"
                 aria-label="YouTube"
               >
