@@ -180,6 +180,12 @@ export default function CollectionPage({
   // Use ALL variants for auto combo (no limit)
   const autoVariants = useMemo(() => allVariants, [allVariants]);
 
+  // Custom variants: HIDE first and last product from the grid
+  const customVariants = useMemo(() => {
+    if (allVariants.length <= 2) return [];
+    return allVariants.slice(1, -1);
+  }, [allVariants]);
+
   // Responsive items per slide
   useEffect(() => {
     const handleResize = () => {
@@ -257,7 +263,7 @@ export default function CollectionPage({
     setCustomQuantities((prev) => {
       const currentQty = prev[id] || 0;
       const newQty = Math.max(0, currentQty + delta);
-      
+
       if (newQty > 0) {
         setSelectedVariantIds((sel) => {
           if (!sel.includes(id)) {
@@ -586,7 +592,7 @@ export default function CollectionPage({
         </div>
 
         {/* ============================================ */}
-        {/* CUSTOMIZE YOUR COMBO - ALL PRODUCTS */}
+        {/* CUSTOMIZE YOUR COMBO - HIDE FIRST & LAST */}
         {/* ============================================ */}
         <section className="mb-8">
           <div className="flex flex-col sm:flex-row items-start justify-between gap-4 mb-4">
@@ -596,7 +602,7 @@ export default function CollectionPage({
                 Customize Your Combo
               </div>
               <h2 className="text-lg sm:text-2xl font-black text-slate-900">Build Your Own {collection.title}</h2>
-              <p className="text-xs text-slate-500 mt-1">Choose any products from {collection.title}</p>
+              <p className="text-xs text-slate-500 mt-1">Choose products from {collection.title} (first & last excluded)</p>
             </div>
             {/* Selection count badge */}
             <div className="rounded-lg bg-emerald-100 px-3 py-1.5 text-center whitespace-nowrap">
@@ -607,11 +613,12 @@ export default function CollectionPage({
             </div>
           </div>
 
-          {/* Product Grid - Click anywhere to select - ALL PRODUCTS */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3 mt-4 lg:pl-8 lg:pr-0">
-            {allVariants.map((variant) => {
+          {/* Product Grid - HIDE first & last product - uses customVariants */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3 mt-4">
+            {customVariants.map((variant) => {
               const isSelected = selectedVariantIds.includes(variant.id);
               const qty = customQuantities[variant.id] || 0;
+              const hasCompareAtPrice = variant.actualPrice > variant.offerPrice;
               return (
                 <div
                   key={variant.id}
@@ -646,13 +653,13 @@ export default function CollectionPage({
                   {variant.displayTitle && (
                     <p className="text-[9px] sm:text-[10px] text-slate-500 line-clamp-1">{variant.displayTitle}</p>
                   )}
-                  {/* Show OFFER price with strike-through actual price */}
-                  <div className="mt-0.5">
+                  {/* Show COMPARE-AT price (actual price) with strike-through + OFFER price */}
+                  <div className="mt-0.5 flex items-center gap-1 flex-wrap">
                     <span className="text-xs sm:text-sm font-black text-emerald-600">
                       ₹{formatINR(variant.offerPrice)}
                     </span>
-                    {variant.actualPrice > variant.offerPrice && (
-                      <span className="text-[9px] sm:text-[10px] text-slate-400 line-through ml-1">
+                    {hasCompareAtPrice && (
+                      <span className="text-[9px] sm:text-[10px] text-slate-400 line-through">
                         ₹{formatINR(variant.actualPrice)}
                       </span>
                     )}
