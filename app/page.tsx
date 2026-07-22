@@ -99,37 +99,41 @@ export default async function HomePage() {
 
       <main>
         <section className="relative w-full overflow-hidden">
-          <div className="relative h-[60vh] sm:h-[65vh] md:h-[75vh] lg:h-[88vh] xl:h-[90vh]">
-            {/* Background Image */}
-            <div className="absolute inset-0 -mt-10 sm:mt-0">
+          {/* Responsive height for all devices: mobile → Nest Hub → desktop */}
+          <div className="relative w-full h-[50vh] sm:h-[55vh] md:h-[65vh] lg:h-[75vh] xl:h-[85vh] 2xl:h-[90vh]">
+            
+            {/* Background Image - maintains aspect ratio on all screens */}
+            <div className="absolute inset-0">
               <Image
                 src="/h1.png"
                 alt="Duodrop Banner"
                 fill
                 priority
-                className="object-cover object-center scale-95 sm:scale-100"
+                sizes="100vw"
+                className="object-cover object-center"
               />
             </div>
 
-            {/* Shop Combos Button - Centered & Wider */}
+            {/* Shop Combos Button - Centered, responsive on ALL devices */}
             <Link
               href="/collections"
-              className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center gap-2 rounded-xl font-bold text-white transition-all duration-300 hover:scale-105 hover:shadow-lg
-                /* Mobile */
-                top-[85%] w-[45%] h-[9%] text-sm
-                /* Desktop */
-                sm:top-[88%] sm:w-[22%] sm:h-[8%] sm:text-base"
+              className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center gap-1.5 sm:gap-2 rounded-lg sm:rounded-xl font-bold text-white transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95"
               style={{
+                top: '84%',
+                width: 'min(42%, 280px)',
+                height: '9%',
                 background: 'linear-gradient(135deg, #5B2E91 0%, #4A1F7A 100%)',
+                fontSize: 'clamp(11px, 2.2vw, 18px)',
+                whiteSpace: 'nowrap',
               }}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg xmlns="http://www.w3.org/2000/svg" width="1.1em" height="1.1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="9" cy="21" r="1"/>
                 <circle cx="20" cy="21" r="1"/>
                 <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
               </svg>
-              Shop Combos
-              <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <span>Shop Combos</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="1.1em" height="1.1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12h14"/>
                 <path d="m12 5 7 7-7 7"/>
               </svg>
