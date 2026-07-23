@@ -3,30 +3,23 @@
 
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
-import { Search, User, ShoppingBag, Menu, X, LogOut, User as UserIcon, HelpCircle, FileText } from "lucide-react";
+import { Search, ShoppingBag, Menu, X, HelpCircle, FileText } from "lucide-react";
 import { useCart } from "@/context/CartContext";
-import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 
 export default function Navbar() {
   const { cartCount } = useCart();
-  const { customer, logout } = useAuth();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const mobileSearchRef = useRef<HTMLDivElement>(null);
-  const userMenuRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (mobileSearchRef.current && !mobileSearchRef.current.contains(event.target as Node)) {
         setMobileSearchOpen(false);
-      }
-      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
-        setUserMenuOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -49,12 +42,6 @@ export default function Navbar() {
       setMobileSearchOpen(false);
       setSearchQuery("");
     }
-  };
-
-  const handleLogout = async () => {
-    await logout();
-    setUserMenuOpen(false);
-    router.push('/');
   };
 
   return (
@@ -139,63 +126,6 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* User Menu */}
-          <div className="relative" ref={userMenuRef}>
-            <button
-              className="grid h-9 w-9 sm:h-10 sm:w-10 place-items-center rounded-full border border-white/20 bg-white/10 text-white/80 shadow-sm transition hover:-translate-y-0.5 hover:bg-white/20"
-              aria-label="Account"
-              onClick={() => setUserMenuOpen(!userMenuOpen)}
-            >
-              <User size={18} />
-            </button>
-
-            {userMenuOpen && (
-              <div className="absolute right-0 top-11 sm:top-12 min-w-[180px] sm:min-w-[200px] rounded-xl border border-white/10 bg-[#143255] p-2 shadow-xl z-50">
-                {customer ? (
-                  <>
-                    <div className="px-3 py-2 border-b border-white/10">
-                      <p className="text-sm font-semibold text-white truncate">{customer.firstName} {customer.lastName}</p>
-                      <p className="text-xs text-white/60 truncate">{customer.email}</p>
-                    </div>
-                    <Link
-                      href="/account"
-                      className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-white/80 hover:bg-white/10 transition"
-                      onClick={() => setUserMenuOpen(false)}
-                    >
-                      <UserIcon size={16} />
-                      My Account
-                    </Link>
-                    <button
-                      onClick={handleLogout}
-                      className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-rose-400 hover:bg-white/10 transition"
-                    >
-                      <LogOut size={16} />
-                      Logout
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <Link
-                      href="/login"
-                      className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-white/80 hover:bg-white/10 transition"
-                      onClick={() => setUserMenuOpen(false)}
-                    >
-                      <User size={16} />
-                      Sign In
-                    </Link>
-                    <Link
-                      href="/register"
-                      className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-[#2FEBD8] hover:bg-white/10 transition"
-                      onClick={() => setUserMenuOpen(false)}
-                    >
-                      Create Account
-                    </Link>
-                  </>
-                )}
-              </div>
-            )}
-          </div>
-
           {/* Cart */}
           <Link
             href="/cart"
@@ -238,30 +168,13 @@ export default function Navbar() {
               Return Policy
             </Link>
             <Link href="/faq" className="transition hover:text-white/90 flex items-center gap-2 py-1" onClick={() => setMobileMenuOpen(false)}>
+              <HelpCircle size={16} />
               FAQ
             </Link>
             <Link href="/terms" className="transition hover:text-white/90 flex items-center gap-2 py-1" onClick={() => setMobileMenuOpen(false)}>
+              <FileText size={16} />
               Terms & Conditions
             </Link>
-            {customer ? (
-              <>
-                <Link href="/account" className="transition hover:text-white/90 py-1" onClick={() => setMobileMenuOpen(false)}>
-                  My Account
-                </Link>
-                <button onClick={handleLogout} className="text-left text-rose-400 transition hover:text-rose-300 py-1">
-                  Logout
-                </button>
-              </>
-            ) : (
-              <>
-                <Link href="/login" className="transition hover:text-white/90 py-1" onClick={() => setMobileMenuOpen(false)}>
-                  Sign In
-                </Link>
-                <Link href="/register" className="transition hover:text-white/90 py-1" onClick={() => setMobileMenuOpen(false)}>
-                  Create Account
-                </Link>
-              </>
-            )}
           </div>
         </div>
       )}
