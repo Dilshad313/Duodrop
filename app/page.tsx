@@ -6,7 +6,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { GET_ALL_COLLECTIONS } from "@/lib/queries";
 import { isShopifyConfigured, shopifyFetch } from "@/lib/shopify";
-import { Truck, RefreshCw, Lock, Headphones, ArrowRight } from "lucide-react";
+import { Truck, RefreshCw, Lock, Headphones, ArrowRight, Star } from "lucide-react";
 
 // --- Metadata for the page ---
 export const metadata: Metadata = {
@@ -73,6 +73,63 @@ type CollectionsResponse = {
 };
 
 export const dynamic = "force-dynamic";
+
+// Mock review data (replace with actual data from your backend)
+const reviews = [
+  {
+    id: 1,
+    name: "Rahul Sharma",
+    rating: 5,
+    comment: "Absolutely love the grooming kit! Premium quality and amazing results.",
+    product: "Premium Grooming Kit",
+    date: "2 weeks ago",
+    avatar: "R"
+  },
+  {
+    id: 2,
+    name: "Priya Patel",
+    rating: 5,
+    comment: "The skincare combo transformed my skin. Highly recommend to everyone!",
+    product: "Skincare Essentials",
+    date: "1 month ago",
+    avatar: "P"
+  },
+  {
+    id: 3,
+    name: "Amit Kumar",
+    rating: 4,
+    comment: "Great products with excellent packaging. Shipping was super fast.",
+    product: "Beard Care Set",
+    date: "3 weeks ago",
+    avatar: "A"
+  },
+  {
+    id: 4,
+    name: "Sneha Reddy",
+    rating: 5,
+    comment: "Best beauty tools I've ever used. Worth every penny!",
+    product: "Beauty Tool Set",
+    date: "1 week ago",
+    avatar: "S"
+  }
+];
+
+const StarRating = ({ rating }: { rating: number }) => {
+  return (
+    <div className="flex gap-0.5">
+      {[...Array(5)].map((_, i) => (
+        <Star
+          key={i}
+          className={`h-4 w-4 ${
+            i < rating
+              ? 'fill-yellow-400 text-yellow-400'
+              : 'fill-gray-200 text-gray-200'
+          }`}
+        />
+      ))}
+    </div>
+  );
+};
 
 export default async function HomePage() {
   let collections: Collection[] = [];
@@ -156,18 +213,18 @@ export default async function HomePage() {
 
         {/* Collections Grid */}
         <section id="collections" className="mx-auto max-w-7xl px-4 pt-16 sm:px-6 lg:px-8">
-          <div className="mb-8 flex items-center justify-between">
+          <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h2 className="text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+              <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
                 Shop by Collection
               </h2>
               <p className="mt-1 text-sm font-medium text-slate-500">Browse our curated collections</p>
             </div>
             <Link
               href="/collections"
-              className="inline-flex h-11 items-center justify-center rounded-xl bg-slate-950 px-5 text-sm font-bold text-white transition hover:bg-indigo-600"
+              className="inline-flex h-11 items-center justify-center rounded-xl bg-slate-950 px-4 sm:px-5 text-sm font-bold text-white transition hover:bg-indigo-600 w-full sm:w-auto"
             >
-              View All Combo
+              View All Combos
             </Link>
           </div>
 
@@ -209,6 +266,42 @@ export default async function HomePage() {
                 </div>
               </Link>
             ))}
+          </div>
+        </section>
+
+        {/* Product Reviews Section */}
+        <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+          <div className="mb-8">
+            <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+              What Our Customers Say
+            </h2>
+            <p className="mt-1 text-sm font-medium text-slate-500">Real reviews from real customers</p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {reviews.map((review) => (
+              <div
+                key={review.id}
+                className="flex flex-col rounded-2xl border border-white/70 bg-white/80 p-6 shadow-[0_20px_60px_rgba(15,23,42,0.06)] backdrop-blur-xl transition hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(15,23,42,0.12)]"
+              >
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-sm font-bold text-white">
+                    {review.avatar}
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-slate-950">{review.name}</h4>
+                    <p className="text-xs text-slate-500">{review.date}</p>
+                  </div>
+                </div>
+                <StarRating rating={review.rating} />
+                <p className="mt-3 text-sm text-slate-600 line-clamp-3">{review.comment}</p>
+                <p className="mt-2 text-xs font-medium text-indigo-600">on {review.product}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* View All Reviews Button */}
+          <div className="mt-8 text-center">
           </div>
         </section>
 

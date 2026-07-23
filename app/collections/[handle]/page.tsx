@@ -21,6 +21,7 @@ import {
   RotateCcw,
   Package
 } from "lucide-react";
+import Image from "next/image";
 
 type Variant = {
   id: string;
@@ -201,7 +202,10 @@ export default function CollectionPage({
 
   const totalSlides = useMemo(() => Math.max(1, Math.ceil(autoVariants.length / itemsPerSlide)), [autoVariants.length, itemsPerSlide]);
 
-  // Auto combo price is the exact sum of Shopify Price fields.
+  // ============================================================
+  // AUTO COMBO - exact sum of offer prices (Price field)
+  // MRP - sum of compare‑at prices (or price if compare‑at missing)
+  // ============================================================
   const autoComboPrice = useMemo(() => autoVariants.reduce((sum, v) => sum + v.offerPrice, 0), [autoVariants]);
   const autoTotalActualMrp = useMemo(() => autoVariants.reduce((sum, v) => sum + v.actualPrice, 0), [autoVariants]);
   const autoYouSave = Math.max(0, autoTotalActualMrp - autoComboPrice);
@@ -736,6 +740,20 @@ export default function CollectionPage({
             </div>
           </div>
         )}
+
+        {/* ============================================ */}
+        {/* SECURE PAYMENTS SECTION */}
+        {/* ============================================ */}
+        <section className="mb-6 px-2 sm:px-4">
+          <Image
+            src="/visa.svg"
+            alt="Secure Payments"
+            width={1400}
+            height={180}
+            priority
+            className="w-full h-auto"
+          />
+        </section>
 
         {/* Trust Badges */}
         <section className="flex justify-center items-center mb-8">
